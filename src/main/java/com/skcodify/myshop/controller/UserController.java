@@ -1,6 +1,7 @@
 package com.skcodify.myshop.controller;
 
 import com.skcodify.myshop.domain.User;
+import com.skcodify.myshop.dto.UserDto;
 import com.skcodify.myshop.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,7 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getUsers(@RequestParam(required = false) List<Long> id) {
+    public List<UserDto> getUsers(@RequestParam(required = false) List<Long> id) {
         return userService.findUsers(id);
     }
 }
