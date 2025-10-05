@@ -1,6 +1,6 @@
 package com.skcodify.myshop.controller;
 
-import com.skcodify.myshop.domain.Product;
+import com.skcodify.myshop.dto.ProductDto;
 import com.skcodify.myshop.service.ProductService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +20,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getProducts(@RequestParam(required = false) String status) {
+    public List<ProductDto> getProducts(@RequestParam(required = false) String status) {
         return productService.findProducts(status);
     }
 }

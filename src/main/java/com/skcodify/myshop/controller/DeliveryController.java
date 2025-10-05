@@ -1,7 +1,7 @@
 package com.skcodify.myshop.controller;
 
-import com.skcodify.myshop.domain.DeliveryPartner;
-import com.skcodify.myshop.domain.DeliveryVehicle;
+import com.skcodify.myshop.dto.DeliveryPartnerDto;
+import com.skcodify.myshop.dto.DeliveryVehicleDto;
 import com.skcodify.myshop.service.DeliveryService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,17 +18,17 @@ public class DeliveryController {
     }
 
     @GetMapping("/deliveryPartners")
-    public List<DeliveryPartner> getDeliveryPartners(@RequestParam(required = false) Long userId) {
+    public List<DeliveryPartnerDto> getDeliveryPartners(@RequestParam(required = false) Long userId) {
         return deliveryService.findDeliveryPartners(userId);
     }
 
     @PatchMapping("/deliveryPartners/{partnerId}")
-    public DeliveryPartner updateDeliveryPartner(@PathVariable String partnerId, @RequestBody Map<String, Object> updates) {
+    public DeliveryPartnerDto updateDeliveryPartner(@PathVariable String partnerId, @RequestBody Map<String, Object> updates) {
         return deliveryService.updateDeliveryPartner(partnerId, updates);
     }
 
     @GetMapping("/deliveryVehicles/{vehicleId}")
-    public DeliveryVehicle getDeliveryVehicle(@PathVariable String vehicleId) {
+    public DeliveryVehicleDto getDeliveryVehicle(@PathVariable String vehicleId) {
         return deliveryService.findDeliveryVehicleById(vehicleId);
     }
 }

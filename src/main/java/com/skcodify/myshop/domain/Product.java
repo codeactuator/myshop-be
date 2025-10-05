@@ -1,51 +1,95 @@
 package com.skcodify.myshop.domain;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.List;
 
+/**
+ * Represents a product available for sale in the system.
+ * This entity is mapped to the "products" table in the database.
+ */
 @Entity
 @Table(name = "products")
 public class Product {
 
+    /**
+     * The unique identifier for the product.
+     * This is a string-based ID, so no auto-generation is used.
+     */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
+    /**
+     * The name of the product.
+     */
+    @Column(nullable = false)
     private String name;
 
-    @Lob // Specifies that this should be a large object in the database
+    /**
+     * A detailed description of the product.
+     */
+    @Lob
     private String description;
 
+    /**
+     * The price of the product.
+     * Using BigDecimal is best practice for monetary values.
+     */
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
+    /**
+     * The category the product belongs to.
+     */
     private String category;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "product_image_urls", joinColumns = @JoinColumn(name = "product_id"))
+    /**
+     * The user who is selling this product.
+     * This is a many-to-one relationship, as a user can sell multiple products.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id")
+    @JsonBackReference
+    private User seller;
+
+    /**
+     * The current stock quantity available.
+     */
+    private int stock;
+
+    /**
+     * The availability status of the product (e.g., "available", "sold_out").
+     */
+    private String status;
+
+    /**
+     * A list of URLs for the product images.
+     */
+    @ElementCollection
+    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "image_url")
     private List<String> imageUrls;
 
-    @Enumerated(EnumType.STRING)
-    private ProductStatus status;
+    /**
+     * The date and time when the product was posted.
+     */
+    private ZonedDateTime postedDate;
 
-    private Instant postedDate;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User seller;
-
-    // Constructors
+    /**
+     * Default constructor for JPA.
+     */
     public Product() {
     }
 
     // Getters and Setters
-    public Long getId() {
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -81,6 +125,30 @@ public class Product {
         this.category = category;
     }
 
+    public User getSeller() {
+        return seller;
+    }
+
+    public void setSeller(User seller) {
+        this.seller = seller;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public List<String> getImageUrls() {
         return imageUrls;
     }
@@ -89,27 +157,11 @@ public class Product {
         this.imageUrls = imageUrls;
     }
 
-    public ProductStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ProductStatus status) {
-        this.status = status;
-    }
-
-    public Instant getPostedDate() {
+    public ZonedDateTime getPostedDate() {
         return postedDate;
     }
 
-    public void setPostedDate(Instant postedDate) {
+    public void setPostedDate(ZonedDateTime postedDate) {
         this.postedDate = postedDate;
-    }
-
-    public User getSeller() {
-        return seller;
-    }
-
-    public void setSeller(User seller) {
-        this.seller = seller;
     }
 }

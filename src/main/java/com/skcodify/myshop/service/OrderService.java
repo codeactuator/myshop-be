@@ -1,63 +1,118 @@
 package com.skcodify.myshop.service;
 
-import com.skcodify.myshop.domain.DeliveryPartner;
-import com.skcodify.myshop.domain.Order;
-import com.skcodify.myshop.domain.OrderStatus;
+import com.skcodify.myshop.domain.*;
+
+import com.skcodify.myshop.dto.OrderDto;
+
+import com.skcodify.myshop.mapper.OrderMapper;
 import com.skcodify.myshop.repository.DeliveryPartnerRepository;
 import com.skcodify.myshop.repository.OrderRepository;
+import com.skcodify.myshop.repository.ProductRepository;
+import com.skcodify.myshop.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
 
     private final OrderRepository orderRepository;
     private final DeliveryPartnerRepository deliveryPartnerRepository;
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
+    private final OrderMapper orderMapper;
 
-    public OrderService(OrderRepository orderRepository, DeliveryPartnerRepository deliveryPartnerRepository) {
+    public OrderService(OrderRepository orderRepository, DeliveryPartnerRepository deliveryPartnerRepository, UserRepository userRepository, ProductRepository productRepository, OrderMapper orderMapper) {
         this.orderRepository = orderRepository;
         this.deliveryPartnerRepository = deliveryPartnerRepository;
+        this.userRepository = userRepository;
+        this.productRepository = productRepository;
+        this.orderMapper = orderMapper;
     }
 
-    public List<Order> findOrders(Long userId, String deliveryPartnerId) {
+    public List<OrderDto> findOrders(Long userId, String deliveryPartnerId) {
+        List<Order> orders;
         if (userId != null) {
-            return orderRepository.findByBuyerId(userId);
+            orders = orderRepository.findByBuyerId(userId);
+        } else if (deliveryPartnerId != null) {
+            orders = orderRepository.findByDeliveryPartnerId(deliveryPartnerId);
+        } else {
+            orders = orderRepository.findAll();
         }
-        if (deliveryPartnerId != null) {
-            return orderRepository.findByDeliveryPartnerId(deliveryPartnerId);
-        }
-        return orderRepository.findAll();
+        return orders.stream().map(orderMapper::toDto).collect(Collectors.toList());
     }
 
-    public Order findOrderById(String orderId) {
-        return orderRepository.findById(orderId)
+    public OrderDto findOrderById(String orderId) {
+        Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + orderId));
-    }
-
-    public Order createOrder(Order order) {
-        // Add any order creation logic here (e.g., setting default status, date)
-        return orderRepository.save(order);
+        return orderMapper.toDto(order);
     }
 
     @Transactional
-    public Order updateOrder(String orderId, Map<String, Object> updates) {
-        Order order = findOrderById(orderId);
+    public OrderDto createOrder(OrderDto request) {
+        User buyer = userRepository.findById(request.getBuyerId())
+                .orElseThrow(() -> new EntityNotFoundException("Buyer not found with id: " + request.getBuyerId()));
 
-        updates.forEach((key, value) -> {
-            if ("status".equals(key)) {
-                order.setStatus(OrderStatus.valueOf((String) value));
-            }
-            if ("deliveryPartnerId".equals(key)) {
-                DeliveryPartner partner = deliveryPartnerRepository.findById((String) value)
-                        .orElseThrow(() -> new EntityNotFoundException("DeliveryPartner not found with id: " + value));
-                order.setDeliveryPartner(partner);
-            }
-        });
+        BuyerInfo buyerInfo = new BuyerInfo();
+        buyerInfo.setName(buyer.getName());
+        buyerInfo.setApartmentNumber(buyer.getApartmentNumber());
+        buyerInfo.setPhone(buyer.getPhone());
 
-        return orderRepository.save(order);
+        Order order = new Order();
+        order.setId(UUID.randomUUID().toString().substring(0, 4)); // Simple ID generation
+        order.setBuyer(buyer);
+        order.setBuyerInfo(buyerInfo);
+        order.setOrderDate(ZonedDateTime.now());
+        order.setFulfillmentMethod(request.getFulfillmentMethod());
+        order.setPaymentMethod(request.getPaymentMethod());
+        order.setStatus(request.getPaymentMethod() == PaymentMethod.COD ? OrderStatus.PENDING : OrderStatus.AWAITING_PAYMENT);
+
+        List<OrderItem> orderItems = new ArrayList<>();
+        BigDecimal totalAmount = BigDecimal.ZERO;
+
+        for (var itemRequest : request.getItems()) {
+            Product product = productRepository.findById(itemRequest.getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + itemRequest.getId()));
+
+            OrderItem orderItem = new OrderItem();
+            orderItem.setProduct(product);
+            orderItem.setQuantity(itemRequest.getQuantity());
+            orderItem.setPrice(product.getPrice());
+            orderItem.setOrder(order);
+            orderItems.add(orderItem);
+
+            totalAmount = totalAmount.add(product.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity())));
+        }
+
+        order.setItems(orderItems);
+        order.setTotalAmount(totalAmount);
+
+        Order savedOrder = orderRepository.save(order);
+        return orderMapper.toDto(savedOrder);
+    }
+
+    @Transactional
+    public OrderDto updateOrder(String orderId, OrderDto updates) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + orderId));
+
+        if (updates.getStatus() != null) {
+            order.setStatus(updates.getStatus());
+        }
+        if (updates.getDeliveryPartnerId() != null) {
+            DeliveryPartner partner = deliveryPartnerRepository.findById(updates.getDeliveryPartnerId())
+                    .orElseThrow(() -> new EntityNotFoundException("DeliveryPartner not found with id: " + updates.getDeliveryPartnerId()));
+            order.setDeliveryPartner(partner);
+        }
+
+        Order updatedOrder = orderRepository.save(order);
+        return orderMapper.toDto(updatedOrder);
     }
 }

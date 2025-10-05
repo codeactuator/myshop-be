@@ -1,6 +1,7 @@
 package com.skcodify.myshop.domain;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.List;
 
 /**
@@ -78,6 +79,7 @@ public class User {
      * The 'mappedBy' attribute indicates that the 'seller' field in the Product entity owns the relationship.
      */
     @OneToMany(mappedBy = "seller")
+    @JsonManagedReference
     private List<Product> products;
 
     // Constructors
