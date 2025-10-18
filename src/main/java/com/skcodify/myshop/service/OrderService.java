@@ -57,18 +57,11 @@ public class OrderService {
 
     @Transactional
     public OrderDto createOrder(OrderDto request) {
-        User buyer = userRepository.findById(request.getBuyerId())
-                .orElseThrow(() -> new EntityNotFoundException("Buyer not found with id: " + request.getBuyerId()));
-
-        BuyerInfo buyerInfo = new BuyerInfo();
-        buyerInfo.setName(buyer.getName());
-        buyerInfo.setApartmentNumber(buyer.getApartmentNumber());
-        buyerInfo.setPhone(buyer.getPhone());
+        User buyer = userRepository.findById(request.getBuyerInfo().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Buyer not found with phone: " + request.getBuyerInfo().getPhone()));
 
         Order order = new Order();
-        order.setId(UUID.randomUUID().toString().substring(0, 4)); // Simple ID generation
-        order.setBuyer(buyer);
-        order.setBuyerInfo(buyerInfo);
+        order.setId(UUID.randomUUID().toString().substring(0, 4)); // Simple ID generation//order.setBuyer(buyer);
         order.setOrderDate(ZonedDateTime.now());
         order.setFulfillmentMethod(request.getFulfillmentMethod());
         order.setPaymentMethod(request.getPaymentMethod());

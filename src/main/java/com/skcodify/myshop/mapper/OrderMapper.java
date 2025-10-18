@@ -2,9 +2,11 @@ package com.skcodify.myshop.mapper;
 
 import com.skcodify.myshop.domain.Order;
 import com.skcodify.myshop.domain.OrderItem;
+import com.skcodify.myshop.domain.BuyerInfo;
 import com.skcodify.myshop.domain.Product;
 import com.skcodify.myshop.dto.OrderDto;
 import com.skcodify.myshop.dto.OrderItemDto;
+import com.skcodify.myshop.domain.User;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -19,7 +21,17 @@ public class OrderMapper {
 
         OrderDto dto = new OrderDto();
         dto.setId(order.getId());
-        dto.setBuyerId(order.getBuyer().getId());
+
+        if (order.getBuyer() != null) {
+            User buyer = order.getBuyer();
+            BuyerInfo buyerInfo = new BuyerInfo();
+            buyerInfo.setId(buyer.getId());
+            buyerInfo.setName(buyer.getName());
+            buyerInfo.setApartmentNumber(buyer.getApartmentNumber());
+            buyerInfo.setPhone(buyer.getPhone());
+            dto.setBuyerInfo(buyerInfo);
+        }
+
         dto.setTotalAmount(order.getTotalAmount());
         dto.setOrderDate(order.getOrderDate());
         dto.setStatus(order.getStatus());
@@ -57,8 +69,8 @@ public class OrderMapper {
         dto.setPostedDate(product.getPostedDate());
         dto.setQuantity(orderItem.getQuantity());
 
-        if (product.getSeller() != null) {
-            dto.setUserId(String.valueOf(product.getSeller().getId()));
+        if (product.getUserId() != null) {
+            dto.setUserId(String.valueOf(product.getUserId()));
         }
 
         return dto;

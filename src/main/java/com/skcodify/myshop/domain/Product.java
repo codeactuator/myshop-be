@@ -1,7 +1,6 @@
 package com.skcodify.myshop.domain;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -46,13 +45,11 @@ public class Product {
     private String category;
 
     /**
-     * The user who is selling this product.
-     * This is a many-to-one relationship, as a user can sell multiple products.
+     * The ID of the user who is selling this product.
+     * This replaces the direct @ManyToOne relationship.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seller_id")
-    @JsonBackReference
-    private User seller;
+    @Column(name = "seller_id")
+    private Long userId;
 
     /**
      * The current stock quantity available.
@@ -125,12 +122,12 @@ public class Product {
         this.category = category;
     }
 
-    public User getSeller() {
-        return seller;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setSeller(User seller) {
-        this.seller = seller;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public int getStock() {

@@ -29,13 +29,6 @@ public class Order {
     private User buyer;
 
     /**
-     * A snapshot of the buyer's information at the time of the order.
-     * This is useful for historical records, even if the user's main details change.
-     */
-    @Embedded
-    private BuyerInfo buyerInfo;
-
-    /**
      * The list of items included in this order.
      * This is a one-to-many relationship, managed by the OrderItem entity.
      * CascadeType.ALL ensures that order items are saved/deleted along with the order.
@@ -103,14 +96,6 @@ public class Order {
 
     public void setBuyer(User buyer) {
         this.buyer = buyer;
-    }
-
-    public BuyerInfo getBuyerInfo() {
-        return buyerInfo;
-    }
-
-    public void setBuyerInfo(BuyerInfo buyerInfo) {
-        this.buyerInfo = buyerInfo;
     }
 
     public List<OrderItem> getItems() {

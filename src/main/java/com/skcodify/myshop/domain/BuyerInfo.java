@@ -9,6 +9,7 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class BuyerInfo {
 
+    private long id;
     private String name;
     private String apartmentNumber;
     private String phone;
@@ -20,6 +21,15 @@ public class BuyerInfo {
     }
 
     // Getters and Setters
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

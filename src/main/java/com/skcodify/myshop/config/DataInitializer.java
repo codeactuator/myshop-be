@@ -72,7 +72,7 @@ public class DataInitializer implements CommandLineRunner {
         product1.setStock(15);
         product1.setStatus("available");
         product1.setImageUrls(List.of("https://via.placeholder.com/300/FFC107/000000?Text=Mug+1"));
-        product1.setSeller(seller);
+        product1.setUserId(seller.getId());
         product1.setPostedDate(ZonedDateTime.now().minusDays(10));
 
         Product product2 = new Product();
@@ -87,7 +87,7 @@ public class DataInitializer implements CommandLineRunner {
                 "https://via.placeholder.com/300/00BCD4/FFFFFF?Text=Painting+1",
                 "https://via.placeholder.com/300/009688/FFFFFF?Text=Painting+2"
         ));
-        product2.setSeller(seller);
+        product2.setUserId(seller.getId());
         product2.setPostedDate(ZonedDateTime.now().minusDays(9));
 
         productRepository.saveAll(List.of(product1, product2));

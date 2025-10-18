@@ -22,8 +22,8 @@ public class ProductMapper {
         dto.setStatus(product.getStatus());
         dto.setPostedDate(product.getPostedDate());
 
-        if (product.getSeller() != null) {
-            dto.setUserId(String.valueOf(product.getSeller().getId()));
+        if (product.getUserId() != null) {
+            dto.setUserId(String.valueOf(product.getUserId()));
         }
 
         return dto;

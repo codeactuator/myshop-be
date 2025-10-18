@@ -1,7 +1,6 @@
 package com.skcodify.myshop.domain;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.List;
 
 /**
@@ -72,15 +71,6 @@ public class User {
      * The URL to the user's QR code for UPI payments.
      */
     private String paymentQrUrl;
-
-    /**
-     * The list of products listed by this user (if they are a seller).
-     * This is a one-to-many relationship, where one user can have multiple products.
-     * The 'mappedBy' attribute indicates that the 'seller' field in the Product entity owns the relationship.
-     */
-    @OneToMany(mappedBy = "seller")
-    @JsonManagedReference
-    private List<Product> products;
 
     // Constructors
 
@@ -162,14 +152,6 @@ public class User {
 
     public void setBlocked(boolean blocked) {
         isBlocked = blocked;
-    }
-
-    public List<Product> getProducts() {
-        return products;
-    }
-
-    public void setProducts(List<Product> products) {
-        this.products = products;
     }
 
     public String getUpiId() {

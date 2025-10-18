@@ -1,5 +1,6 @@
 package com.skcodify.myshop.dto;
 
+import com.skcodify.myshop.domain.BuyerInfo;
 import com.skcodify.myshop.domain.FulfillmentMethod;
 import com.skcodify.myshop.domain.OrderStatus;
 import com.skcodify.myshop.domain.PaymentMethod;
@@ -14,7 +15,7 @@ import java.util.List;
 public class OrderDto {
 
     private String id;
-    private Long buyerId;
+    private BuyerInfo buyerInfo;
     private List<OrderItemDto> items;
     private BigDecimal totalAmount;
     private ZonedDateTime orderDate;
@@ -33,12 +34,12 @@ public class OrderDto {
         this.id = id;
     }
 
-    public Long getBuyerId() {
-        return buyerId;
+    public BuyerInfo getBuyerInfo() {
+        return buyerInfo;
     }
 
-    public void setBuyerId(Long buyerId) {
-        this.buyerId = buyerId;
+    public void setBuyerInfo(BuyerInfo buyerInfo) {
+        this.buyerInfo = buyerInfo;
     }
 
     public List<OrderItemDto> getItems() {
