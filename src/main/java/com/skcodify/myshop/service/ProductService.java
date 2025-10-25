@@ -4,6 +4,7 @@ import com.skcodify.myshop.domain.Product;
 import com.skcodify.myshop.dto.ProductDto;
 import com.skcodify.myshop.mapper.ProductMapper;
 import com.skcodify.myshop.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,5 +31,11 @@ public class ProductService {
         return products.stream()
                 .map(productMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public ProductDto findProductById(String id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
+        return productMapper.toDto(product);
     }
 }

@@ -1,15 +1,18 @@
 package com.skcodify.myshop.controller;
 
-import com.skcodify.myshop.domain.Report;
-import com.skcodify.myshop.service.ReportService;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.skcodify.myshop.domain.Report;
+import com.skcodify.myshop.service.ReportService;
 
 @RestController
 @RequestMapping("/reports")
+@CrossOrigin(origins = "*") // Allow requests from any origin
 public class ReportController {
 
     private final ReportService reportService;

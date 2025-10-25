@@ -1,5 +1,6 @@
 package com.skcodify.myshop.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skcodify.myshop.domain.UserType;
 
 /**
@@ -75,6 +76,7 @@ public class UserDto {
         this.shopName = shopName;
     }
 
+    @JsonProperty("isVerified")
     public boolean isVerified() {
         return isVerified;
     }
@@ -83,6 +85,7 @@ public class UserDto {
         isVerified = verified;
     }
 
+    @JsonProperty("isBlocked")
     public boolean isBlocked() {
         return isBlocked;
     }

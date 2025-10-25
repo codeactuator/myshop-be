@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "*") // Allow requests from any origin
 public class DeliveryController {
 
     private final DeliveryService deliveryService;

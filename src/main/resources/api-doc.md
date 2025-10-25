@@ -21,7 +21,8 @@ This document outlines the API endpoints consumed by the `my-shop-ui` React appl
 
 *   **Description**: Fetches user records.
 *   **Query Params**:
-    *   `?id={id1}&id={id2}...`: Fetches multiple specific users by their IDs.
+    *   `?ids={id1}&ids={id2}...`: Fetches multiple specific users by their IDs.
+    *   `?phone={phoneNumber}`: Fetches a single user by their phone number.
 *   **Used In**: `AdminDashboardPage.js`, `ProductListingPage.js`, `MyOrdersPage.js`
 
 ---
