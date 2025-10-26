@@ -61,7 +61,8 @@ public class OrderService {
                 .orElseThrow(() -> new EntityNotFoundException("Buyer not found with phone: " + request.getBuyerInfo().getPhone()));
 
         Order order = new Order();
-        order.setId(UUID.randomUUID().toString().substring(0, 4)); // Simple ID generation//order.setBuyer(buyer);
+        order.setId(UUID.randomUUID().toString().substring(0, 4)); // Simple ID generation
+        order.setBuyer(buyer);
         order.setOrderDate(ZonedDateTime.now());
         order.setFulfillmentMethod(request.getFulfillmentMethod());
         order.setPaymentMethod(request.getPaymentMethod());

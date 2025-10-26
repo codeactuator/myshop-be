@@ -4,7 +4,7 @@ server:
 # Spring Datasource configuration
 spring:
   datasource:
-    url: jdbc:h2:mem:myshopdb
+    url: jdbc:h2:file:/data/myshopdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
     username: sa
     password: password
@@ -12,10 +12,15 @@ spring:
   h2:
     console:
       enabled: true
+      # Set the path for the H2 console
+      path: /h2-console
+      # H2 Console settings
+      # settings:
+      #   web-admin-password: password
   # JPA/Hibernate configuration
   jpa:
     hibernate:
-      # Automatically update the database schema based on entities
+      # Let Hibernate automatically update the schema based on entities.
       ddl-auto: update
     # Log SQL statements to the console for debugging
     show-sql: true

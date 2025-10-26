@@ -11,6 +11,7 @@ This document outlines the API endpoints consumed by the `my-shop-ui` React appl
 *   **Description**: Fetches a list of products.
 *   **Query Params**:
     *   `?status=available`: Filters for products that are available for sale.
+    *   `?userId={userId}`: Fetches all products for a specific seller.
 *   **Used In**: `ProductListingPage.js`, `AdminDashboardPage.js`
 
 ---

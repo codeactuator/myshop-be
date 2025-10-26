@@ -18,6 +18,7 @@ public class ProductDto {
     private String userId;
     private String status;
     private ZonedDateTime postedDate;
+    private Integer stock;
 
     // Getters and Setters
 
@@ -91,5 +92,13 @@ public class ProductDto {
 
     public void setPostedDate(ZonedDateTime postedDate) {
         this.postedDate = postedDate;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
     }
 }

@@ -28,6 +28,12 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- ++ Add this dependency for Spring Security ++ -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
         <!-- ++ Add this dependency for Swagger/OpenAPI ++ -->
         <dependency>
             <groupId>org.springdoc</groupId>

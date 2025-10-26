@@ -21,6 +21,7 @@ public class ProductMapper {
         dto.setImageUrls(product.getImageUrls());
         dto.setStatus(product.getStatus());
         dto.setPostedDate(product.getPostedDate());
+        dto.setStock(product.getStock());
 
         if (product.getUserId() != null) {
             dto.setUserId(String.valueOf(product.getUserId()));
