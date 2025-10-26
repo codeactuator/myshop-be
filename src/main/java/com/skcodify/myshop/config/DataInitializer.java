@@ -27,22 +27,30 @@ public class DataInitializer implements CommandLineRunner {
     private final ProductRepository productRepository;
     private final DeliveryPartnerRepository deliveryPartnerRepository;
     private final DeliveryVehicleRepository deliveryVehicleRepository;
+    private final CartRepository cartRepository;
 
-    public DataInitializer(UserRepository userRepository, ProductRepository productRepository, DeliveryPartnerRepository deliveryPartnerRepository, DeliveryVehicleRepository deliveryVehicleRepository) {
+
+    public DataInitializer(UserRepository userRepository, 
+            ProductRepository productRepository, 
+            DeliveryPartnerRepository deliveryPartnerRepository,
+            DeliveryVehicleRepository deliveryVehicleRepository, 
+            CartRepository cartRepository) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.deliveryPartnerRepository = deliveryPartnerRepository;
         this.deliveryVehicleRepository = deliveryVehicleRepository;
+        this.cartRepository = cartRepository;
     }
 
     @Override
     public void run(String... args) {
         logger.info("users: " + userRepository.count());
         logger.info("products: " + productRepository.count());
+        logger.info("carts: " + cartRepository.count());
 
 
         // Check if data already exists to prevent re-seeding on every restart if not using in-memory DB
-        if (userRepository.count() == 0 && productRepository.count() == 0) {
+        if (userRepository.count() == 0 && productRepository.count() == 0 && cartRepository.count() == 0) {
             logger.info("Database is empty. Seeding with sample data...");
             seedData();
             logger.info("Sample data has been seeded.");
@@ -424,5 +432,22 @@ public class DataInitializer implements CommandLineRunner {
         product22.setPostedDate(ZonedDateTime.now().minusDays(25));
 
         productRepository.saveAll(List.of(product1, product2, product3, product4, product5, product6, product7, product8, product9, product10, product11, product12, product13, product14, product15, product16, product17, product18, product19, product20, product21, product22));
+    
+        // --- Create a Cart for a Buyer ---
+        logger.info("Seeding cart data for a sample user...");
+        Cart cartForBuyer1 = new Cart();
+        cartForBuyer1.setUser(buyer1);
+
+        CartItem cartItem1 = new CartItem();
+        cartItem1.setProduct(product1); // Fresh Organic Apples
+        cartItem1.setQuantity(2);
+        cartForBuyer1.addCartItem(cartItem1);
+
+        CartItem cartItem2 = new CartItem();
+        cartItem2.setProduct(product2); // Artisanal Sourdough Bread
+        cartItem2.setQuantity(1);
+        cartForBuyer1.addCartItem(cartItem2);
+
+        cartRepository.save(cartForBuyer1);
     }
 }

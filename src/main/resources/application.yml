@@ -28,6 +28,9 @@ spring:
       hibernate:
         # Format the logged SQL to be more readable
         format_sql: true
+  jackson:
+    mapper:
+      accept-case-insensitive-enums: true
 
 # Swagger/OpenAPI configuration
 springdoc:
