@@ -1,15 +1,12 @@
 package com.skcodify.myshop.controller;
 
-import java.util.List;
-
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import com.skcodify.myshop.dto.ReviewDto;
 import com.skcodify.myshop.service.ReviewService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/reviews")
@@ -26,4 +23,12 @@ public class ReviewController {
     public List<ReviewDto> getReviews(@RequestParam String productId) {
         return reviewService.findReviewsByProductId(productId);
     }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ReviewDto createReview(@RequestBody ReviewDto reviewDto) {
+        return reviewService.createReview(reviewDto);
+    }
+
+
 }

@@ -28,18 +28,25 @@ public class DataInitializer implements CommandLineRunner {
     private final DeliveryPartnerRepository deliveryPartnerRepository;
     private final DeliveryVehicleRepository deliveryVehicleRepository;
     private final CartRepository cartRepository;
+    private final ReviewRepository reviewRepository;
+    private final ShopFrontRepository shopFrontRepository;
 
 
     public DataInitializer(UserRepository userRepository, 
             ProductRepository productRepository, 
             DeliveryPartnerRepository deliveryPartnerRepository,
             DeliveryVehicleRepository deliveryVehicleRepository, 
-            CartRepository cartRepository) {
+            CartRepository cartRepository,
+            ReviewRepository reviewRepository,
+            ShopFrontRepository shopFrontRepository) {
+                
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.deliveryPartnerRepository = deliveryPartnerRepository;
         this.deliveryVehicleRepository = deliveryVehicleRepository;
         this.cartRepository = cartRepository;
+        this.reviewRepository = reviewRepository;
+        this.shopFrontRepository = shopFrontRepository;
     }
 
     @Override
@@ -47,10 +54,12 @@ public class DataInitializer implements CommandLineRunner {
         logger.info("users: " + userRepository.count());
         logger.info("products: " + productRepository.count());
         logger.info("carts: " + cartRepository.count());
+        logger.info("reviews: " + reviewRepository.count());
+        logger.info("shopfronts: " + shopFrontRepository.count());
 
 
         // Check if data already exists to prevent re-seeding on every restart if not using in-memory DB
-        if (userRepository.count() == 0 && productRepository.count() == 0 && cartRepository.count() == 0) {
+        if (userRepository.count() == 0 && productRepository.count() == 0 && cartRepository.count() == 0 && reviewRepository.count() == 0 && shopFrontRepository.count() == 0) {
             logger.info("Database is empty. Seeding with sample data...");
             seedData();
             logger.info("Sample data has been seeded.");
@@ -449,5 +458,35 @@ public class DataInitializer implements CommandLineRunner {
         cartForBuyer1.addCartItem(cartItem2);
 
         cartRepository.save(cartForBuyer1);
+
+        // --- Create Reviews for Products ---
+        logger.info("Seeding review data for sample products...");
+        Review review1 = new Review();
+        review1.setId("rev-001");
+        review1.setProduct(product1); // Apples
+        review1.setUser(buyer2); // Diana Prince
+        review1.setRating(5);
+        review1.setComment("These apples are incredibly crisp and fresh! Best I've had in a while.");
+        review1.setReviewDate(ZonedDateTime.now().minusDays(1));
+
+        Review review2 = new Review();
+        review2.setId("rev-002");
+        review2.setProduct(product3); // Tomatoes
+        review2.setUser(buyer1); // Bob Buyer
+        review2.setRating(4);
+        review2.setComment("Great tomatoes, perfect for salads. A bit pricey but worth it for the quality.");
+        review2.setReviewDate(ZonedDateTime.now().minusHours(5));
+        reviewRepository.saveAll(List.of(review1, review2));
+
+        // --- Create a Shop Front for a Seller ---
+        logger.info("Seeding shop front data for a sample seller...");
+        ShopFront shopFront1 = new ShopFront();
+        shopFront1.setUser(seller1); // Alice's Art
+        shopFront1.setBannerImageUrl("https://images.unsplash.com/photo-1531973576160-7125cd663d86?q=80&w=2070");
+        shopFront1.setProfileImageUrl("https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=1945");
+        shopFront1.setShopTagline("Handcrafted wonders for your home.");
+        shopFront1.setThemeColor("#E9D8A6"); // A nice beige color
+        shopFront1.setSocialMediaLinks(List.of("https://instagram.com/alicesart", "https://facebook.com/alicesart"));
+        shopFrontRepository.save(shopFront1);
     }
 }
