@@ -31,6 +31,15 @@ spring:
   jackson:
     mapper:
       accept-case-insensitive-enums: true
+  # Caching configuration
+  cache:
+    type: caffeine
+    cache-names:
+      - products
+      - shopFronts
+      - reviews
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=10m
 
 # Swagger/OpenAPI configuration
 springdoc:

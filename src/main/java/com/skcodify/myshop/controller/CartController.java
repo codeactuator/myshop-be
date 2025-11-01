@@ -32,4 +32,9 @@ public class CartController {
     public CartDto removeFromCart(@RequestParam Long userId, @PathVariable Long cartItemId) {
         return cartService.removeFromCart(userId, cartItemId);
     }
+
+    @DeleteMapping("/items")
+    public CartDto removeProductFromCart(@RequestParam Long userId, @RequestParam String productId) {
+        return cartService.removeProductFromCart(userId, productId);
+    }
 }

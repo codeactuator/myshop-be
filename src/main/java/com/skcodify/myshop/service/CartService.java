@@ -77,6 +77,20 @@ public class CartService {
         return cartMapper.toDto(cartRepository.save(cart));
     }
 
+    @Transactional
+    public CartDto removeProductFromCart(Long userId, String productId) {
+        Cart cart = findOrCreateCartByUserId(userId);
+
+        CartItem itemToRemove = cart.getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Product with id: " + productId + " not found in cart."));
+
+        cart.removeCartItem(itemToRemove);
+
+        return cartMapper.toDto(cartRepository.save(cart));
+    }
+
     private Cart findOrCreateCartByUserId(Long userId) {
         return cartRepository.findByUserId(userId)
                 .orElseGet(() -> {

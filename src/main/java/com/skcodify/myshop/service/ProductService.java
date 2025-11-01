@@ -3,6 +3,8 @@ package com.skcodify.myshop.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.CachePut;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,7 @@ import com.skcodify.myshop.mapper.ProductMapper;
 import com.skcodify.myshop.repository.ProductRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.cache.annotation.Cacheable;
 
 @Service
 public class ProductService {
@@ -38,12 +41,14 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "products", key = "#id")
     public ProductDto findProductById(String id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
         return productMapper.toDto(product);
     }
 
+    @CachePut(value = "products", key = "#id")
     @Transactional
     public ProductDto updateProduct(String id, ProductDto updates) {
         Product product = productRepository.findById(id)

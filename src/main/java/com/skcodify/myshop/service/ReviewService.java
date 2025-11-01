@@ -9,6 +9,8 @@ import com.skcodify.myshop.repository.ProductRepository;
 import com.skcodify.myshop.repository.ReviewRepository;
 import com.skcodify.myshop.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,7 @@ public class ReviewService {
         this.reviewMapper = reviewMapper;
     }
 
+    @Cacheable(value = "reviews", key = "#productId")
     @Transactional(readOnly = true)
     public List<ReviewDto> findReviewsByProductId(String productId) {
         List<Review> reviews = reviewRepository.findByProductId(productId);
@@ -38,6 +41,7 @@ public class ReviewService {
                 .collect(Collectors.toList());
     }
 
+    @CacheEvict(value = "reviews", key = "#reviewDto.productId")
     @Transactional
     public ReviewDto createReview(ReviewDto reviewDto) {
         Product product = productRepository.findById(reviewDto.getProductId())

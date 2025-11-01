@@ -4,6 +4,8 @@ import com.skcodify.myshop.dto.ShopFrontDto;
 import com.skcodify.myshop.service.ShopFrontService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/shop-front")
 @CrossOrigin(origins = "*")
@@ -23,5 +25,10 @@ public class ShopFrontController {
     @PutMapping
     public ShopFrontDto updateShopFront(@RequestParam Long sellerId, @RequestBody ShopFrontDto shopFrontDto) {
         return shopFrontService.updateShopFront(sellerId, shopFrontDto);
+    }
+
+    @GetMapping("/batch")
+    public List<ShopFrontDto> getShopFrontsInBatch(@RequestParam List<Long> sellerIds) {
+        return shopFrontService.getShopFrontsBySellerIds(sellerIds);
     }
 }
