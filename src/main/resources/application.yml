@@ -1,0 +1,48 @@
+server:
+  port: 8080
+
+# Spring Datasource configuration
+spring:
+  datasource:
+    url: jdbc:h2:file:/data/myshopdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  # H2 Console configuration
+  h2:
+    console:
+      enabled: true
+      # Set the path for the H2 console
+      path: /h2-console
+      # H2 Console settings
+      # settings:
+      #   web-admin-password: password
+  # JPA/Hibernate configuration
+  jpa:
+    hibernate:
+      # Let Hibernate automatically update the schema based on entities.
+      ddl-auto: update
+    # Log SQL statements to the console for debugging
+    show-sql: true
+    properties:
+      hibernate:
+        # Format the logged SQL to be more readable
+        format_sql: true
+  jackson:
+    mapper:
+      accept-case-insensitive-enums: true
+  # Caching configuration
+  cache:
+    type: caffeine
+    cache-names:
+      - products
+      - shopFronts
+      - reviews
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=10m
+
+# Swagger/OpenAPI configuration
+springdoc:
+  swagger-ui:
+    # Sets the custom path for the Swagger UI page
+    path: /swagger
