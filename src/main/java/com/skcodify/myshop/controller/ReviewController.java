@@ -1,6 +1,7 @@
 package com.skcodify.myshop.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.skcodify.myshop.dto.ReviewDto;
@@ -20,15 +21,12 @@ public class ReviewController {
     }
 
     @GetMapping
-    public List<ReviewDto> getReviews(@RequestParam String productId) {
-        return reviewService.findReviewsByProductId(productId);
+    public ResponseEntity<List<ReviewDto>> getReviews(@RequestParam String productId) {
+        return ResponseEntity.ok(reviewService.findReviewsByProductId(productId));
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ReviewDto createReview(@RequestBody ReviewDto reviewDto) {
-        return reviewService.createReview(reviewDto);
+    public ResponseEntity<ReviewDto> createReview(@RequestBody ReviewDto reviewDto) {
+        return new ResponseEntity<>(reviewService.createReview(reviewDto), HttpStatus.CREATED);
     }
-
-
 }

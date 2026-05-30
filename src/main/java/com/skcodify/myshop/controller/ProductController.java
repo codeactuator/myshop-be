@@ -1,5 +1,6 @@
 package com.skcodify.myshop.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.skcodify.myshop.dto.ProductDto;
@@ -19,18 +20,18 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<ProductDto> getProducts(@RequestParam(required = false) String status,
-                                      @RequestParam(required = false) Long userId) {
-        return productService.findProducts(status, userId);
+    public ResponseEntity<List<ProductDto>> getProducts(@RequestParam(required = false) String status,
+                                                       @RequestParam(required = false) Long userId) {
+        return ResponseEntity.ok(productService.findProducts(status, userId));
     }
 
     @GetMapping("/{id}")
-    public ProductDto getProductById(@PathVariable String id) {
-        return productService.findProductById(id);
+    public ResponseEntity<ProductDto> getProductById(@PathVariable String id) {
+        return ResponseEntity.ok(productService.findProductById(id));
     }
 
     @PatchMapping("/{id}")
-    public ProductDto updateProduct(@PathVariable String id, @RequestBody ProductDto productDto) {
-        return productService.updateProduct(id, productDto);
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable String id, @RequestBody ProductDto productDto) {
+        return ResponseEntity.ok(productService.updateProduct(id, productDto));
     }
 }

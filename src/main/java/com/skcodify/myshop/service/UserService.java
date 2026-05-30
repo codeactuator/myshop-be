@@ -1,15 +1,18 @@
 package com.skcodify.myshop.service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.skcodify.myshop.domain.User;
 import com.skcodify.myshop.dto.UserDto;
 import com.skcodify.myshop.mapper.UserMapper;
 import com.skcodify.myshop.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class UserService {
@@ -44,9 +47,22 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
-    public UserDto findUserByPhone(String phone) {
-        User user = userRepository.findByPhone(phone)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with phone: " + phone));
-        return userMapper.toDto(user);
+    public Optional<UserDto> findUserByPhone(String phone) {
+        return userRepository.findByPhone(phone)
+                .map(userMapper::toDto);
+    }
+
+    @Transactional
+    public UserDto createUser(UserDto userDto) {
+        if (userRepository.findByPhone(userDto.getPhone()).isPresent()) {
+            throw new RuntimeException("A user with this phone number already exists.");
+        }
+        User user = userMapper.toEntity(userDto);
+        return saveUser(user);
+    }
+
+    private UserDto saveUser(User user) { 
+        User savedUser = userRepository.save(user);
+        return userMapper.toDto(savedUser);
     }
 }

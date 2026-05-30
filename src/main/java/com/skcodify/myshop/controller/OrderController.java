@@ -3,6 +3,7 @@ package com.skcodify.myshop.controller;
 import com.skcodify.myshop.dto.OrderDto;
 import com.skcodify.myshop.service.OrderService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,24 +20,23 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<OrderDto> getOrders(@RequestParam(required = false) Long userId,
-                                    @RequestParam(required = false) String deliveryPartnerId) {
-        return orderService.findOrders(userId, deliveryPartnerId);
+    public ResponseEntity<List<OrderDto>> getOrders(@RequestParam(required = false) Long userId,
+                                                   @RequestParam(required = false) String deliveryPartnerId) {
+        return ResponseEntity.ok(orderService.findOrders(userId, deliveryPartnerId));
     }
 
     @GetMapping("/{orderId}")
-    public OrderDto getOrderById(@PathVariable String orderId) {
-        return orderService.findOrderById(orderId);
+    public ResponseEntity<OrderDto> getOrderById(@PathVariable String orderId) {
+        return ResponseEntity.ok(orderService.findOrderById(orderId));
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public OrderDto createOrder(@RequestBody OrderDto orderDto) {
-        return orderService.createOrder(orderDto);
+    public ResponseEntity<OrderDto> createOrder(@RequestBody OrderDto orderDto) {
+        return new ResponseEntity<>(orderService.createOrder(orderDto), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{orderId}")
-    public OrderDto updateOrder(@PathVariable String orderId, @RequestBody OrderDto updates) {
-        return orderService.updateOrder(orderId, updates);
+    public ResponseEntity<OrderDto> updateOrder(@PathVariable String orderId, @RequestBody OrderDto updates) {
+        return ResponseEntity.ok(orderService.updateOrder(orderId, updates));
     }
 }

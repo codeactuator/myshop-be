@@ -66,7 +66,7 @@ public class ProductService {
         if (updates.getCategory() != null) {
             product.setCategory(updates.getCategory());
         }
-        if (updates.getStock() != null) { // This was causing the compilation error
+        if (updates.getStock() != null) {
             product.setStock(updates.getStock());
         }
         if (updates.getStatus() != null) {
