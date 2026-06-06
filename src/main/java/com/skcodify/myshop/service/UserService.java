@@ -61,6 +61,24 @@ public class UserService {
         return saveUser(user);
     }
 
+    @Transactional
+    public UserDto updateUser(Long id, UserDto updates) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+
+        if (updates.getName() != null) user.setName(updates.getName());
+        if (updates.getEmail() != null) user.setEmail(updates.getEmail());
+        if (updates.getPhone() != null) user.setPhone(updates.getPhone());
+        if (updates.getApartmentNumber() != null) user.setApartmentNumber(updates.getApartmentNumber());
+        if (updates.getUserType() != null) user.setUserType(updates.getUserType());
+        if (updates.getShopName() != null) user.setShopName(updates.getShopName());
+        
+        if (updates.isVerified()) user.setVerified(updates.isVerified());
+        if (updates.isBlocked()) user.setBlocked(updates.isBlocked());
+
+        return saveUser(user);
+    }
+
     private UserDto saveUser(User user) { 
         User savedUser = userRepository.save(user);
         return userMapper.toDto(savedUser);

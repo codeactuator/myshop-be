@@ -91,6 +91,14 @@ public class CartService {
         return cartMapper.toDto(cartRepository.save(cart));
     }
 
+    @Transactional
+    public void clearCart(Long userId) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found for user id: " + userId));
+        cart.getItems().clear();
+        cartRepository.save(cart);
+    }
+
     private Cart findOrCreateCartByUserId(Long userId) {
         return cartRepository.findByUserId(userId)
                 .orElseGet(() -> {
