@@ -77,6 +77,7 @@ public class UserService {
         if (updates.isBlocked()) user.setBlocked(updates.isBlocked());
 
         return saveUser(user);
+
     }
 
     private UserDto saveUser(User user) { 
