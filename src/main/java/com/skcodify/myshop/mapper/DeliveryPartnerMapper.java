@@ -2,6 +2,7 @@ package com.skcodify.myshop.mapper;
 
 import com.skcodify.myshop.domain.DeliveryPartner;
 import com.skcodify.myshop.dto.DeliveryPartnerDto;
+import com.skcodify.myshop.dto.LocationDto;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,7 +19,10 @@ public class DeliveryPartnerMapper {
         dto.setPhone(partner.getPhone());
         dto.setAvailable(partner.isAvailable());
         dto.setActiveDeliveries(partner.getActiveDeliveries());
-        dto.setLocation(partner.getLocation());
+
+        if (partner.getLocation() != null) {
+            dto.setLocation(new LocationDto(partner.getLocation().getLat(), partner.getLocation().getLng()));
+        }
 
         if (partner.getUser() != null) {
             dto.setUserId(String.valueOf(partner.getUser().getId()));

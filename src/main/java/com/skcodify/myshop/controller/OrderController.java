@@ -21,8 +21,10 @@ public class OrderController {
 
     @GetMapping
     public ResponseEntity<List<OrderDto>> getOrders(@RequestParam(required = false) Long userId,
-                                                   @RequestParam(required = false) String deliveryPartnerId) {
-        return ResponseEntity.ok(orderService.findOrders(userId, deliveryPartnerId));
+                                                   @RequestParam(required = false) String deliveryPartnerId,
+                                                   @RequestParam(required = false) String status,
+                                                   @RequestParam(required = false) String orderId) {
+        return ResponseEntity.ok(orderService.findOrders(userId, deliveryPartnerId, status, orderId));
     }
 
     @GetMapping("/{orderId}")

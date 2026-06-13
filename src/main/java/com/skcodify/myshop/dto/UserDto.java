@@ -17,6 +17,12 @@ public class UserDto {
     private String shopName;
     private boolean isVerified;
     private boolean isBlocked;
+    private String gpayId;
+    private String paytmId;
+    private String phonepeId;
+    private String upiId;
+    private String shopTagline;
+    private String bannerImageUrl;
 
     // Getters and Setters
 
@@ -92,5 +98,53 @@ public class UserDto {
 
     public void setBlocked(boolean blocked) {
         isBlocked = blocked;
+    }
+
+    public String getGpayId() {
+        return gpayId;
+    }
+
+    public void setGpayId(String gpayId) {
+        this.gpayId = gpayId;
+    }
+
+    public String getPaytmId() {
+        return paytmId;
+    }
+
+    public void setPaytmId(String paytmId) {
+        this.paytmId = paytmId;
+    }
+
+    public String getPhonepeId() {
+        return phonepeId;
+    }
+
+    public void setPhonepeId(String phonepeId) {
+        this.phonepeId = phonepeId;
+    }
+
+    public String getUpiId() {
+        return upiId;
+    }
+
+    public void setUpiId(String upiId) {
+        this.upiId = upiId;
+    }
+
+    public String getShopTagline() {
+        return shopTagline;
+    }
+
+    public void setShopTagline(String shopTagline) {
+        this.shopTagline = shopTagline;
+    }
+
+    public String getBannerImageUrl() {
+        return bannerImageUrl;
+    }
+
+    public void setBannerImageUrl(String bannerImageUrl) {
+        this.bannerImageUrl = bannerImageUrl;
     }
 }

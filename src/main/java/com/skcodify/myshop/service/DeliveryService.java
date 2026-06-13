@@ -51,8 +51,8 @@ public class DeliveryService {
         DeliveryPartner partner = partnerRepository.findById(partnerId)
                 .orElseThrow(() -> new EntityNotFoundException("DeliveryPartner not found with id: " + partnerId));
 
-        if (updates.isAvailable() != partner.isAvailable()) { // Check if the value is different
-            partner.setAvailable(updates.isAvailable());
+        if (updates.getAvailable() != null && updates.getAvailable() != partner.isAvailable()) {
+            partner.setAvailable(updates.getAvailable());
         }
 
         return partnerMapper.toDto(partnerRepository.save(partner));

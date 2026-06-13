@@ -1,7 +1,14 @@
 package com.skcodify.myshop.domain;
 
-import jakarta.persistence.*;
-import java.util.List;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
 
 /**
  * Represents a user in the system.
@@ -66,6 +73,19 @@ public class User {
      * The user's UPI (Unified Payments Interface) ID for receiving payments.
      */
     private String upiId;
+
+    /**
+     * Specific UPI IDs for different providers.
+     */
+    private String gpayId;
+    private String paytmId;
+    private String phonepeId;
+
+    private String shopTagline;
+
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String bannerImageUrl;
 
     /**
      * The URL to the user's QR code for UPI payments.
@@ -168,5 +188,45 @@ public class User {
 
     public void setPaymentQrUrl(String paymentQrUrl) {
         this.paymentQrUrl = paymentQrUrl;
+    }
+
+    public String getGpayId() {
+        return gpayId;
+    }
+
+    public void setGpayId(String gpayId) {
+        this.gpayId = gpayId;
+    }
+
+    public String getPaytmId() {
+        return paytmId;
+    }
+
+    public void setPaytmId(String paytmId) {
+        this.paytmId = paytmId;
+    }
+
+    public String getPhonepeId() {
+        return phonepeId;
+    }
+
+    public void setPhonepeId(String phonepeId) {
+        this.phonepeId = phonepeId;
+    }
+
+    public String getShopTagline() {
+        return shopTagline;
+    }
+
+    public void setShopTagline(String shopTagline) {
+        this.shopTagline = shopTagline;
+    }
+
+    public String getBannerImageUrl() {
+        return bannerImageUrl;
+    }
+
+    public void setBannerImageUrl(String bannerImageUrl) {
+        this.bannerImageUrl = bannerImageUrl;
     }
 }

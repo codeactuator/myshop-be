@@ -1,22 +1,19 @@
 package com.skcodify.myshop.dto;
 
-import com.skcodify.myshop.domain.Location;
-
 /**
- * Data Transfer Object for representing a Delivery Partner in API responses.
+ * Data Transfer Object for Delivery Partner operations.
  */
 public class DeliveryPartnerDto {
-
     private String id;
-    private String userId;
     private String name;
     private String phone;
     private Boolean available;
+    private LocationDto location;
     private int activeDeliveries;
-    private Location location;
+    private String userId;
     private String vehicleId;
 
-    // Getters and Setters
+    public DeliveryPartnerDto() {}
 
     public String getId() {
         return id;
@@ -24,14 +21,6 @@ public class DeliveryPartnerDto {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     public String getName() {
@@ -50,12 +39,20 @@ public class DeliveryPartnerDto {
         this.phone = phone;
     }
 
-    public boolean isAvailable() {
-        return available != null && available;
+    public Boolean getAvailable() {
+        return available;
     }
 
-    public void setAvailable(boolean available) {
+    public void setAvailable(Boolean available) {
         this.available = available;
+    }
+
+    public LocationDto getLocation() {
+        return location;
+    }
+
+    public void setLocation(LocationDto location) {
+        this.location = location;
     }
 
     public int getActiveDeliveries() {
@@ -66,12 +63,12 @@ public class DeliveryPartnerDto {
         this.activeDeliveries = activeDeliveries;
     }
 
-    public Location getLocation() {
-        return location;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getVehicleId() {

@@ -1,13 +1,13 @@
 package com.skcodify.myshop.dto;
 
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
+import java.util.List;
+
 import com.skcodify.myshop.domain.BuyerInfo;
 import com.skcodify.myshop.domain.FulfillmentMethod;
 import com.skcodify.myshop.domain.OrderStatus;
 import com.skcodify.myshop.domain.PaymentMethod;
-
-import java.math.BigDecimal;
-import java.time.ZonedDateTime;
-import java.util.List;
 
 /**
  * Data Transfer Object for representing an Order in API responses.
@@ -23,6 +23,7 @@ public class OrderDto {
     private FulfillmentMethod fulfillmentMethod;
     private PaymentMethod paymentMethod;
     private String deliveryPartnerId;
+    private String upiProvider;
 
     // Getters and Setters
 
@@ -96,5 +97,13 @@ public class OrderDto {
 
     public void setDeliveryPartnerId(String deliveryPartnerId) {
         this.deliveryPartnerId = deliveryPartnerId;
+    }
+
+    public String getUpiProvider() {
+        return upiProvider;
+    }
+
+    public void setUpiProvider(String upiProvider) {
+        this.upiProvider = upiProvider;
     }
 }
