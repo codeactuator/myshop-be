@@ -62,11 +62,27 @@ public class ProductController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<ProductDto> updateProduct(@PathVariable String id, @RequestBody ProductDto productDto) {
-        return ResponseEntity.ok(productService.updateProduct(id, productDto));
+        ProductDto updated = productService.updateProduct(id, productDto);
+        if (updated.getUserId() != null) {
+            NotificationController.sendNotification(
+                String.valueOf(updated.getUserId()),
+                "alert",
+                "Your product '" + updated.getName() + "' was successfully updated!"
+            );
+        }
+        return ResponseEntity.ok(updated);
     }
 
     @PostMapping
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto) {
-        return new ResponseEntity<>(productService.createProduct(productDto), HttpStatus.CREATED);
+        ProductDto created = productService.createProduct(productDto);
+        if (created.getUserId() != null) {
+            NotificationController.sendNotification(
+                String.valueOf(created.getUserId()),
+                "alert",
+                "Your new product '" + created.getName() + "' is now live!"
+            );
+        }
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 }

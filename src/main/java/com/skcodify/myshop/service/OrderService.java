@@ -1,24 +1,34 @@
 package com.skcodify.myshop.service;
 
-import com.skcodify.myshop.domain.*;
-
-import com.skcodify.myshop.dto.OrderDto;
-
-import com.skcodify.myshop.mapper.OrderMapper;
-import com.skcodify.myshop.repository.DeliveryPartnerRepository;
-import com.skcodify.myshop.repository.OrderRepository;
-import com.skcodify.myshop.repository.ProductRepository;
-import com.skcodify.myshop.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import com.skcodify.myshop.controller.NotificationController;
+import com.skcodify.myshop.domain.DeliveryPartner;
+import com.skcodify.myshop.domain.Order;
+import com.skcodify.myshop.domain.OrderItem;
+import com.skcodify.myshop.domain.OrderStatus;
+import com.skcodify.myshop.domain.PaymentMethod;
+import com.skcodify.myshop.domain.Product;
+import com.skcodify.myshop.domain.User;
+import com.skcodify.myshop.domain.UserType;
+import com.skcodify.myshop.dto.OrderDto;
+import com.skcodify.myshop.mapper.OrderMapper;
+import com.skcodify.myshop.repository.DeliveryPartnerRepository;
+import com.skcodify.myshop.repository.OrderRepository;
+import com.skcodify.myshop.repository.ProductRepository;
+import com.skcodify.myshop.repository.UserRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class OrderService {
@@ -98,6 +108,31 @@ public class OrderService {
         order.setTotalAmount(totalAmount);
 
         Order savedOrder = orderRepository.save(order);
+
+        // Notify Sellers of the items in this order
+        if (savedOrder.getItems() != null) {
+            triggerAfterCommit(() -> {
+                savedOrder.getItems().stream()
+                    .map(item -> item.getProduct().getUserId())
+                    .filter(java.util.Objects::nonNull)
+                    .distinct()
+                    .forEach(sellerId -> NotificationController.sendNotification(
+                        String.valueOf(sellerId),
+                        "alert",
+                        "New order #" + savedOrder.getId() + " received!"
+                    ));
+
+                // Notify Admins
+                userRepository.findAll().stream()
+                    .filter(u -> u.getUserType() == UserType.ADMIN)
+                    .forEach(admin -> NotificationController.sendNotification(
+                        String.valueOf(admin.getId()),
+                        "alert",
+                        "New order #" + savedOrder.getId() + " has been placed!"
+                    ));
+            });
+        }
+
         return orderMapper.toDto(savedOrder);
     }
 
@@ -110,6 +145,60 @@ public class OrderService {
         handlePartnerAssignment(order, updates.getDeliveryPartnerId());
 
         Order updatedOrder = orderRepository.save(order);
+
+        // Notify Buyer of status update
+        if (updatedOrder.getBuyer() != null) {
+            String buyerMessage;
+            if (updatedOrder.getStatus() == OrderStatus.OUT_FOR_DELIVERY) {
+                buyerMessage = "Your order #" + updatedOrder.getId() + " is out for delivery!";
+            } else if (updatedOrder.getStatus() == OrderStatus.DELIVERED) {
+                buyerMessage = "Your order #" + updatedOrder.getId() + " has been delivered. Enjoy!";
+            } else {
+                buyerMessage = "Your order #" + updatedOrder.getId() + " status is now " + updatedOrder.getStatus().name().replace('_', ' ');
+            }
+            NotificationController.sendNotification(
+                String.valueOf(updatedOrder.getBuyer().getId()),
+                "alert",
+                buyerMessage
+            );
+        }
+
+        // Notify Delivery Partner if assigned
+        if (updatedOrder.getDeliveryPartner() != null && updatedOrder.getDeliveryPartner().getUser() != null) {
+            String partnerMessage;
+            if (updates.getDeliveryPartnerId() != null) {
+                partnerMessage = "A new delivery has been assigned to you: Order #" + updatedOrder.getId() + "!";
+            } else {
+                partnerMessage = "Delivery task for Order #" + updatedOrder.getId() + " is now " + updatedOrder.getStatus().name().replace('_', ' ');
+            }
+            NotificationController.sendNotification(
+                String.valueOf(updatedOrder.getDeliveryPartner().getUser().getId()),
+                "alert",
+                partnerMessage
+            );
+        }
+
+        // Notify Sellers of status update
+        if (updatedOrder.getItems() != null) {
+            String sellerMessage;
+            if (updatedOrder.getStatus() == OrderStatus.OUT_FOR_DELIVERY) {
+                sellerMessage = "Order #" + updatedOrder.getId() + " has been picked up by the delivery partner.";
+            } else if (updatedOrder.getStatus() == OrderStatus.DELIVERED) {
+                sellerMessage = "Order #" + updatedOrder.getId() + " has been successfully delivered.";
+            } else {
+                sellerMessage = "Order #" + updatedOrder.getId() + " status updated to " + updatedOrder.getStatus().name().replace('_', ' ');
+            }
+            updatedOrder.getItems().stream()
+                .map(item -> item.getProduct().getUserId())
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .forEach(sellerId -> NotificationController.sendNotification(
+                    String.valueOf(sellerId),
+                    "alert",
+                    sellerMessage
+                ));
+        }
+
         return orderMapper.toDto(updatedOrder);
     }
 
@@ -176,6 +265,19 @@ public class OrderService {
 
         if (isInEarlyStage) {
             order.setStatus(OrderStatus.READY_FOR_SHIP);
+        }
+    }
+
+    private void triggerAfterCommit(Runnable runnable) {
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    runnable.run();
+                }
+            });
+        } else {
+            runnable.run();
         }
     }
 }
