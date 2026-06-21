@@ -146,58 +146,61 @@ public class OrderService {
 
         Order updatedOrder = orderRepository.save(order);
 
-        // Notify Buyer of status update
-        if (updatedOrder.getBuyer() != null) {
-            String buyerMessage;
-            if (updatedOrder.getStatus() == OrderStatus.OUT_FOR_DELIVERY) {
-                buyerMessage = "Your order #" + updatedOrder.getId() + " is out for delivery!";
-            } else if (updatedOrder.getStatus() == OrderStatus.DELIVERED) {
-                buyerMessage = "Your order #" + updatedOrder.getId() + " has been delivered. Enjoy!";
-            } else {
-                buyerMessage = "Your order #" + updatedOrder.getId() + " status is now " + updatedOrder.getStatus().name().replace('_', ' ');
-            }
-            NotificationController.sendNotification(
-                String.valueOf(updatedOrder.getBuyer().getId()),
-                "alert",
-                buyerMessage
-            );
-        }
-
-        // Notify Delivery Partner if assigned
-        if (updatedOrder.getDeliveryPartner() != null && updatedOrder.getDeliveryPartner().getUser() != null) {
-            String partnerMessage;
-            if (updates.getDeliveryPartnerId() != null) {
-                partnerMessage = "A new delivery has been assigned to you: Order #" + updatedOrder.getId() + "!";
-            } else {
-                partnerMessage = "Delivery task for Order #" + updatedOrder.getId() + " is now " + updatedOrder.getStatus().name().replace('_', ' ');
-            }
-            NotificationController.sendNotification(
-                String.valueOf(updatedOrder.getDeliveryPartner().getUser().getId()),
-                "alert",
-                partnerMessage
-            );
-        }
-
-        // Notify Sellers of status update
-        if (updatedOrder.getItems() != null) {
-            String sellerMessage;
-            if (updatedOrder.getStatus() == OrderStatus.OUT_FOR_DELIVERY) {
-                sellerMessage = "Order #" + updatedOrder.getId() + " has been picked up by the delivery partner.";
-            } else if (updatedOrder.getStatus() == OrderStatus.DELIVERED) {
-                sellerMessage = "Order #" + updatedOrder.getId() + " has been successfully delivered.";
-            } else {
-                sellerMessage = "Order #" + updatedOrder.getId() + " status updated to " + updatedOrder.getStatus().name().replace('_', ' ');
-            }
-            updatedOrder.getItems().stream()
-                .map(item -> item.getProduct().getUserId())
-                .filter(java.util.Objects::nonNull)
-                .distinct()
-                .forEach(sellerId -> NotificationController.sendNotification(
-                    String.valueOf(sellerId),
+        // Delay notifications until the database transaction is fully committed to prevent race conditions
+        triggerAfterCommit(() -> {
+            // Notify Buyer of status update
+            if (updatedOrder.getBuyer() != null) {
+                String buyerMessage;
+                if (updatedOrder.getStatus() == OrderStatus.OUT_FOR_DELIVERY) {
+                    buyerMessage = "Your order #" + updatedOrder.getId() + " is out for delivery!";
+                } else if (updatedOrder.getStatus() == OrderStatus.DELIVERED) {
+                    buyerMessage = "Your order #" + updatedOrder.getId() + " has been delivered. Enjoy!";
+                } else {
+                    buyerMessage = "Your order #" + updatedOrder.getId() + " status is now " + updatedOrder.getStatus().name().replace('_', ' ');
+                }
+                NotificationController.sendNotification(
+                    String.valueOf(updatedOrder.getBuyer().getId()),
                     "alert",
-                    sellerMessage
-                ));
-        }
+                    buyerMessage
+                );
+            }
+
+            // Notify Delivery Partner if assigned
+            if (updatedOrder.getDeliveryPartner() != null && updatedOrder.getDeliveryPartner().getUser() != null) {
+                String partnerMessage;
+                if (updates.getDeliveryPartnerId() != null) {
+                    partnerMessage = "A new delivery has been assigned to you: Order #" + updatedOrder.getId() + "!";
+                } else {
+                    partnerMessage = "Delivery task for Order #" + updatedOrder.getId() + " is now " + updatedOrder.getStatus().name().replace('_', ' ');
+                }
+                NotificationController.sendNotification(
+                    String.valueOf(updatedOrder.getDeliveryPartner().getUser().getId()),
+                    "alert",
+                    partnerMessage
+                );
+            }
+
+            // Notify Sellers of status update
+            if (updatedOrder.getItems() != null) {
+                String sellerMessage;
+                if (updatedOrder.getStatus() == OrderStatus.OUT_FOR_DELIVERY) {
+                    sellerMessage = "Order #" + updatedOrder.getId() + " has been picked up by the delivery partner.";
+                } else if (updatedOrder.getStatus() == OrderStatus.DELIVERED) {
+                    sellerMessage = "Order #" + updatedOrder.getId() + " has been successfully delivered.";
+                } else {
+                    sellerMessage = "Order #" + updatedOrder.getId() + " status updated to " + updatedOrder.getStatus().name().replace('_', ' ');
+                }
+                updatedOrder.getItems().stream()
+                    .map(item -> item.getProduct().getUserId())
+                    .filter(java.util.Objects::nonNull)
+                    .distinct()
+                    .forEach(sellerId -> NotificationController.sendNotification(
+                        String.valueOf(sellerId),
+                        "alert",
+                        sellerMessage
+                    ));
+            }
+        });
 
         return orderMapper.toDto(updatedOrder);
     }
