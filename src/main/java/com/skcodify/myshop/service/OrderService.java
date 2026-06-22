@@ -109,18 +109,21 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        // Notify Sellers of the items in this order
-        if (savedOrder.getItems() != null) {
+        // Resolve all IDs within the active transaction to avoid LazyInitializationException after commit
+        final List<Long> sellerIds = savedOrder.getItems() != null ? savedOrder.getItems().stream()
+                .map(item -> item.getProduct().getUserId())
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList()) : List.of();
+        final String orderIdStr = savedOrder.getId();
+
+        if (!sellerIds.isEmpty()) {
             triggerAfterCommit(() -> {
-                savedOrder.getItems().stream()
-                    .map(item -> item.getProduct().getUserId())
-                    .filter(java.util.Objects::nonNull)
-                    .distinct()
-                    .forEach(sellerId -> NotificationController.sendNotification(
-                        String.valueOf(sellerId),
-                        "alert",
-                        "New order #" + savedOrder.getId() + " received!"
-                    ));
+                sellerIds.forEach(sellerId -> NotificationController.sendNotification(
+                    String.valueOf(sellerId),
+                    "alert",
+                    "New order #" + orderIdStr + " received!"
+                ));
 
                 // Notify Admins
                 userRepository.findAll().stream()
@@ -128,7 +131,7 @@ public class OrderService {
                     .forEach(admin -> NotificationController.sendNotification(
                         String.valueOf(admin.getId()),
                         "alert",
-                        "New order #" + savedOrder.getId() + " has been placed!"
+                        "New order #" + orderIdStr + " has been placed!"
                     ));
             });
         }
@@ -146,59 +149,69 @@ public class OrderService {
 
         Order updatedOrder = orderRepository.save(order);
 
+        // Resolve all IDs and lazy-loaded properties within the active transaction to avoid LazyInitializationException after commit
+        final Long targetBuyerId = updatedOrder.getBuyer() != null ? updatedOrder.getBuyer().getId() : null;
+        final Long targetPartnerUserId = (updatedOrder.getDeliveryPartner() != null && updatedOrder.getDeliveryPartner().getUser() != null)
+                ? updatedOrder.getDeliveryPartner().getUser().getId()
+                : null;
+        final List<Long> sellerIds = updatedOrder.getItems() != null ? updatedOrder.getItems().stream()
+                .map(item -> item.getProduct().getUserId())
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList()) : List.of();
+        final OrderStatus orderStatus = updatedOrder.getStatus();
+        final String orderIdStr = updatedOrder.getId();
+        final String requestPartnerId = updates.getDeliveryPartnerId();
+
         // Delay notifications until the database transaction is fully committed to prevent race conditions
         triggerAfterCommit(() -> {
             // Notify Buyer of status update
-            if (updatedOrder.getBuyer() != null) {
+            if (targetBuyerId != null) {
                 String buyerMessage;
-                if (updatedOrder.getStatus() == OrderStatus.OUT_FOR_DELIVERY) {
-                    buyerMessage = "Your order #" + updatedOrder.getId() + " is out for delivery!";
-                } else if (updatedOrder.getStatus() == OrderStatus.DELIVERED) {
-                    buyerMessage = "Your order #" + updatedOrder.getId() + " has been delivered. Enjoy!";
+                if (orderStatus == OrderStatus.OUT_FOR_DELIVERY) {
+                    buyerMessage = "Your order #" + orderIdStr + " is out for delivery!";
+                } else if (orderStatus == OrderStatus.DELIVERED) {
+                    buyerMessage = "Your order #" + orderIdStr + " has been delivered. Enjoy!";
                 } else {
-                    buyerMessage = "Your order #" + updatedOrder.getId() + " status is now " + updatedOrder.getStatus().name().replace('_', ' ');
+                    buyerMessage = "Your order #" + orderIdStr + " status is now " + orderStatus.name().replace('_', ' ');
                 }
                 NotificationController.sendNotification(
-                    String.valueOf(updatedOrder.getBuyer().getId()),
+                    String.valueOf(targetBuyerId),
                     "alert",
                     buyerMessage
                 );
             }
 
             // Notify Delivery Partner if assigned
-            if (updatedOrder.getDeliveryPartner() != null && updatedOrder.getDeliveryPartner().getUser() != null) {
+            if (targetPartnerUserId != null) {
                 String partnerMessage;
-                if (updates.getDeliveryPartnerId() != null) {
-                    partnerMessage = "A new delivery has been assigned to you: Order #" + updatedOrder.getId() + "!";
+                if (requestPartnerId != null) {
+                    partnerMessage = "A new delivery has been assigned to you: Order #" + orderIdStr + "!";
                 } else {
-                    partnerMessage = "Delivery task for Order #" + updatedOrder.getId() + " is now " + updatedOrder.getStatus().name().replace('_', ' ');
+                    partnerMessage = "Delivery task for Order #" + orderIdStr + " is now " + orderStatus.name().replace('_', ' ');
                 }
                 NotificationController.sendNotification(
-                    String.valueOf(updatedOrder.getDeliveryPartner().getUser().getId()),
+                    String.valueOf(targetPartnerUserId),
                     "alert",
                     partnerMessage
                 );
             }
 
             // Notify Sellers of status update
-            if (updatedOrder.getItems() != null) {
+            if (!sellerIds.isEmpty()) {
                 String sellerMessage;
-                if (updatedOrder.getStatus() == OrderStatus.OUT_FOR_DELIVERY) {
-                    sellerMessage = "Order #" + updatedOrder.getId() + " has been picked up by the delivery partner.";
-                } else if (updatedOrder.getStatus() == OrderStatus.DELIVERED) {
-                    sellerMessage = "Order #" + updatedOrder.getId() + " has been successfully delivered.";
+                if (orderStatus == OrderStatus.OUT_FOR_DELIVERY) {
+                    sellerMessage = "Order #" + orderIdStr + " has been picked up by the delivery partner.";
+                } else if (orderStatus == OrderStatus.DELIVERED) {
+                    sellerMessage = "Order #" + orderIdStr + " has been successfully delivered.";
                 } else {
-                    sellerMessage = "Order #" + updatedOrder.getId() + " status updated to " + updatedOrder.getStatus().name().replace('_', ' ');
+                    sellerMessage = "Order #" + orderIdStr + " status updated to " + orderStatus.name().replace('_', ' ');
                 }
-                updatedOrder.getItems().stream()
-                    .map(item -> item.getProduct().getUserId())
-                    .filter(java.util.Objects::nonNull)
-                    .distinct()
-                    .forEach(sellerId -> NotificationController.sendNotification(
-                        String.valueOf(sellerId),
-                        "alert",
-                        sellerMessage
-                    ));
+                sellerIds.forEach(sellerId -> NotificationController.sendNotification(
+                    String.valueOf(sellerId),
+                    "alert",
+                    sellerMessage
+                ));
             }
         });
 

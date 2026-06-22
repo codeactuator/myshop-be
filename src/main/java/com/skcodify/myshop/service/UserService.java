@@ -72,13 +72,6 @@ public class UserService {
         if (updates.getApartmentNumber() != null) user.setApartmentNumber(updates.getApartmentNumber());
         if (updates.getUserType() != null) user.setUserType(updates.getUserType());
         if (updates.getShopName() != null) user.setShopName(updates.getShopName());
-        
-        if (updates.getGpayId() != null) user.setGpayId(updates.getGpayId());
-        if (updates.getPaytmId() != null) user.setPaytmId(updates.getPaytmId());
-        if (updates.getPhonepeId() != null) user.setPhonepeId(updates.getPhonepeId());
-        if (updates.getUpiId() != null) user.setUpiId(updates.getUpiId());
-        if (updates.getShopTagline() != null) user.setShopTagline(updates.getShopTagline());
-        if (updates.getBannerImageUrl() != null) user.setBannerImageUrl(updates.getBannerImageUrl());
 
         if (updates.isVerified()) user.setVerified(updates.isVerified());
         if (updates.isBlocked()) user.setBlocked(updates.isBlocked());

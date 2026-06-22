@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,20 +68,20 @@ public class ShopFrontService {
     }
 
     private ShopFront findOrCreateShopFrontBySellerId(Long sellerId) {
-        return shopFrontRepository.findByUserId(sellerId)
-                .orElseGet(() -> {
-                    User user = userRepository.findById(sellerId)
-                            .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + sellerId));
+        Optional<ShopFront> shopFrontOpt = shopFrontRepository.findByUserId(sellerId);
+        if (shopFrontOpt.isPresent()) {
+            return shopFrontOpt.get();
+        }
 
-                    if (user.getUserType() != UserType.SELLER) {
-                        throw new IllegalArgumentException("User with id " + sellerId + " is not a seller.");
-                    }
-
-                    ShopFront newShopFront = new ShopFront();
-                    newShopFront.setUser(user);
-                    // Set default values if needed
-                    newShopFront.setThemeColor("#FFFFFF");
-                    return shopFrontRepository.save(newShopFront);
-                });
+        // If no shop front exists for this seller, create a new one
+        User user = userRepository.findById(sellerId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + sellerId));
+        if (user.getUserType() != UserType.SELLER) {
+            throw new IllegalArgumentException("User with id " + sellerId + " is not a seller.");
+        }
+        ShopFront newShopFront = new ShopFront();
+        newShopFront.setUser(user);
+        newShopFront.setThemeColor("#FFFFFF"); // Set default values if needed
+        return shopFrontRepository.save(newShopFront);
     }
 }

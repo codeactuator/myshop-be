@@ -14,10 +14,16 @@ public class ShopFrontMapper {
 
         ShopFrontDto dto = new ShopFrontDto();
         dto.setUserId(shopFront.getUser().getId());
+        dto.setShopName(shopFront.getShopName());
         dto.setBannerImageUrl(shopFront.getBannerImageUrl());
         dto.setProfileImageUrl(shopFront.getProfileImageUrl());
         dto.setShopTagline(shopFront.getShopTagline());
         dto.setThemeColor(shopFront.getThemeColor());
+        dto.setUpiId(shopFront.getUpiId());
+        dto.setGpayId(shopFront.getGpayId());
+        dto.setPaytmId(shopFront.getPaytmId());
+        dto.setPhonepeId(shopFront.getPhonepeId());
+        dto.setPaymentQrUrl(shopFront.getPaymentQrUrl());
         dto.setSocialMediaLinks(shopFront.getSocialMediaLinks());
 
         return dto;
@@ -28,6 +34,9 @@ public class ShopFrontMapper {
             return;
         }
 
+        if (dto.getShopName() != null) {
+            shopFront.setShopName(dto.getShopName());
+        }
         if (dto.getBannerImageUrl() != null) {
             shopFront.setBannerImageUrl(dto.getBannerImageUrl());
         }
@@ -39,6 +48,21 @@ public class ShopFrontMapper {
         }
         if (dto.getThemeColor() != null) {
             shopFront.setThemeColor(dto.getThemeColor());
+        }
+        if (dto.getUpiId() != null) {
+            shopFront.setUpiId(dto.getUpiId());
+        }
+        if (dto.getGpayId() != null) {
+            shopFront.setGpayId(dto.getGpayId());
+        }
+        if (dto.getPaytmId() != null) {
+            shopFront.setPaytmId(dto.getPaytmId());
+        }
+        if (dto.getPhonepeId() != null) {
+            shopFront.setPhonepeId(dto.getPhonepeId());
+        }
+        if (dto.getPaymentQrUrl() != null) {
+            shopFront.setPaymentQrUrl(dto.getPaymentQrUrl());
         }
         if (dto.getSocialMediaLinks() != null) {
             shopFront.getSocialMediaLinks().clear();

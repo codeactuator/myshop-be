@@ -57,4 +57,34 @@ public class CloudStorageService {
         log.info("Upload complete. Public URL: {}", publicUrl);
         return publicUrl;
     }
+
+    /**
+     * Uploads a shop banner image to GCS (in the banners/ folder) and returns its public URL.
+     */
+    public String uploadShopBanner(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("Cannot upload an empty file.");
+        }
+
+        log.info("Starting shop banner upload. Original name: {}, Size: {} bytes", file.getOriginalFilename(), file.getSize());
+
+        String originalFilename = file.getOriginalFilename();
+        String extension = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        }
+        String uniqueFileName = "banners/" + UUID.randomUUID().toString() + extension;
+
+        BlobId blobId = BlobId.of(bucketName, uniqueFileName);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+                .setContentType(file.getContentType())
+                .build();
+
+        log.info("Uploading shop banner to GCS path: gs://{}/{}", bucketName, uniqueFileName);
+        storage.create(blobInfo, file.getBytes());
+
+        String publicUrl = String.format("https://storage.googleapis.com/%s/%s", bucketName, uniqueFileName);
+        log.info("Shop banner upload complete. Public URL: {}", publicUrl);
+        return publicUrl;
+    }
 }

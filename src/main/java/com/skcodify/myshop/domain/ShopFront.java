@@ -20,10 +20,16 @@ public class ShopFront {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
+    private String shopName;
     private String bannerImageUrl;
     private String profileImageUrl;
     private String shopTagline;
     private String themeColor;
+    private String upiId;
+    private String gpayId;
+    private String paytmId;
+    private String phonepeId;
+    private String paymentQrUrl;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "shop_front_social_links", joinColumns = @JoinColumn(name = "shop_front_id"))
@@ -46,6 +52,14 @@ public class ShopFront {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getShopName() {
+        return shopName;
+    }
+
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
     }
 
     public String getBannerImageUrl() {
@@ -78,6 +92,46 @@ public class ShopFront {
 
     public void setThemeColor(String themeColor) {
         this.themeColor = themeColor;
+    }
+
+    public String getUpiId() {
+        return upiId;
+    }
+
+    public void setUpiId(String upiId) {
+        this.upiId = upiId;
+    }
+
+    public String getGpayId() {
+        return gpayId;
+    }
+
+    public void setGpayId(String gpayId) {
+        this.gpayId = gpayId;
+    }
+
+    public String getPaytmId() {
+        return paytmId;
+    }
+
+    public void setPaytmId(String paytmId) {
+        this.paytmId = paytmId;
+    }
+
+    public String getPhonepeId() {
+        return phonepeId;
+    }
+
+    public void setPhonepeId(String phonepeId) {
+        this.phonepeId = phonepeId;
+    }
+
+    public String getPaymentQrUrl() {
+        return paymentQrUrl;
+    }
+
+    public void setPaymentQrUrl(String paymentQrUrl) {
+        this.paymentQrUrl = paymentQrUrl;
     }
 
     public List<String> getSocialMediaLinks() {

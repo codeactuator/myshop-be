@@ -7,7 +7,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 
 /**
@@ -69,28 +71,8 @@ public class User {
      */
     private boolean isBlocked;
 
-    /**
-     * The user's UPI (Unified Payments Interface) ID for receiving payments.
-     */
-    private String upiId;
-
-    /**
-     * Specific UPI IDs for different providers.
-     */
-    private String gpayId;
-    private String paytmId;
-    private String phonepeId;
-
-    private String shopTagline;
-
-    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String bannerImageUrl;
-
-    /**
-     * The URL to the user's QR code for UPI payments.
-     */
-    private String paymentQrUrl;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private ShopFront shopFront;
 
     // Constructors
 
@@ -174,59 +156,11 @@ public class User {
         isBlocked = blocked;
     }
 
-    public String getUpiId() {
-        return upiId;
+    public ShopFront getShopFront() {
+        return shopFront;
     }
 
-    public void setUpiId(String upiId) {
-        this.upiId = upiId;
-    }
-
-    public String getPaymentQrUrl() {
-        return paymentQrUrl;
-    }
-
-    public void setPaymentQrUrl(String paymentQrUrl) {
-        this.paymentQrUrl = paymentQrUrl;
-    }
-
-    public String getGpayId() {
-        return gpayId;
-    }
-
-    public void setGpayId(String gpayId) {
-        this.gpayId = gpayId;
-    }
-
-    public String getPaytmId() {
-        return paytmId;
-    }
-
-    public void setPaytmId(String paytmId) {
-        this.paytmId = paytmId;
-    }
-
-    public String getPhonepeId() {
-        return phonepeId;
-    }
-
-    public void setPhonepeId(String phonepeId) {
-        this.phonepeId = phonepeId;
-    }
-
-    public String getShopTagline() {
-        return shopTagline;
-    }
-
-    public void setShopTagline(String shopTagline) {
-        this.shopTagline = shopTagline;
-    }
-
-    public String getBannerImageUrl() {
-        return bannerImageUrl;
-    }
-
-    public void setBannerImageUrl(String bannerImageUrl) {
-        this.bannerImageUrl = bannerImageUrl;
+    public void setShopFront(ShopFront shopFront) {
+        this.shopFront = shopFront;
     }
 }
