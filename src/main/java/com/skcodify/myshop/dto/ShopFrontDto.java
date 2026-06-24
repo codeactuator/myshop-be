@@ -6,6 +6,7 @@ public class ShopFrontDto {
 
     private Long userId;
     private String shopName;
+    private String payeeName;
     private String bannerImageUrl;
     private String profileImageUrl;
     private String shopTagline;
@@ -18,6 +19,14 @@ public class ShopFrontDto {
     private List<String> socialMediaLinks;
 
     // Getters and Setters
+
+    public String getPayeeName() {
+        return payeeName;
+    }
+
+    public void setPayeeName(String payeeName) {
+        this.payeeName = payeeName;
+    }
 
     public Long getUserId() {
         return userId;

@@ -21,6 +21,7 @@ public class ShopFront {
     private User user;
 
     private String shopName;
+    private String payeeName;
     private String bannerImageUrl;
     private String profileImageUrl;
     private String shopTagline;
@@ -37,6 +38,14 @@ public class ShopFront {
     private List<String> socialMediaLinks = new ArrayList<>();
 
     // Getters and Setters
+
+    public String getPayeeName() {
+        return payeeName;
+    }
+
+    public void setPayeeName(String payeeName) {
+        this.payeeName = payeeName;
+    }
 
     public Long getId() {
         return id;

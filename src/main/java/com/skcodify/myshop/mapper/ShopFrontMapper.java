@@ -15,6 +15,7 @@ public class ShopFrontMapper {
         ShopFrontDto dto = new ShopFrontDto();
         dto.setUserId(shopFront.getUser().getId());
         dto.setShopName(shopFront.getShopName());
+        dto.setPayeeName(shopFront.getPayeeName());
         dto.setBannerImageUrl(shopFront.getBannerImageUrl());
         dto.setProfileImageUrl(shopFront.getProfileImageUrl());
         dto.setShopTagline(shopFront.getShopTagline());
@@ -36,6 +37,9 @@ public class ShopFrontMapper {
 
         if (dto.getShopName() != null) {
             shopFront.setShopName(dto.getShopName());
+        }
+        if (dto.getPayeeName() != null) {
+            shopFront.setPayeeName(dto.getPayeeName());
         }
         if (dto.getBannerImageUrl() != null) {
             shopFront.setBannerImageUrl(dto.getBannerImageUrl());

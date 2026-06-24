@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -32,13 +33,13 @@ public class ShopFrontService {
     }
 
     @Cacheable(value = "shopFronts", key = "#sellerId")
-    @Transactional(readOnly = true)
+    @Transactional
     public ShopFrontDto getShopFrontBySellerId(Long sellerId) {
         ShopFront shopFront = findOrCreateShopFrontBySellerId(sellerId);
         return shopFrontMapper.toDto(shopFront);
     }
 
-    @CachePut(value = "shopFronts", key = "#sellerId")
+    @CacheEvict(value = "shopFronts", allEntries = true)
     @Transactional
     public ShopFrontDto updateShopFront(Long sellerId, ShopFrontDto shopFrontDto) {
         ShopFront shopFront = findOrCreateShopFrontBySellerId(sellerId);
@@ -68,9 +69,17 @@ public class ShopFrontService {
     }
 
     private ShopFront findOrCreateShopFrontBySellerId(Long sellerId) {
-        Optional<ShopFront> shopFrontOpt = shopFrontRepository.findByUserId(sellerId);
-        if (shopFrontOpt.isPresent()) {
-            return shopFrontOpt.get();
+        List<ShopFront> shopFronts = shopFrontRepository.findAll().stream()
+                .filter(sf -> sf.getUser() != null && sellerId.equals(sf.getUser().getId()))
+                .collect(Collectors.toList());
+
+        if (!shopFronts.isEmpty()) {
+            ShopFront primary = shopFronts.get(0);
+            if (shopFronts.size() > 1) {
+                List<ShopFront> duplicates = shopFronts.subList(1, shopFronts.size());
+                shopFrontRepository.deleteAll(duplicates);
+            }
+            return primary;
         }
 
         // If no shop front exists for this seller, create a new one
