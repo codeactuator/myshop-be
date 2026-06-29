@@ -20,6 +20,7 @@ public class SecurityConfig {
             // For development, we can disable CSRF for all other requests for simplicity.
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // All other requests are permitted for now (for development convenience)
                 // You can change this to .anyRequest().authenticated() or more specific rules later
                 .anyRequest().permitAll()

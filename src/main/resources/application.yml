@@ -55,6 +55,14 @@ spring:
     caffeine:
       spec: maximumSize=500,expireAfterWrite=10m
 
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate: DEBUG
+
 # Swagger/OpenAPI configuration
 springdoc:
   swagger-ui:

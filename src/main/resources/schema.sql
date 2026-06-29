@@ -12,6 +12,14 @@ DROP TABLE IF EXISTS delivery_partners;
 DROP TABLE IF EXISTS delivery_vehicles;
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS societies;
+
+-- Create societies table
+CREATE TABLE societies (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    area TEXT
+);
 
 -- Create users table
 CREATE TABLE users (
@@ -25,7 +33,9 @@ CREATE TABLE users (
     is_verified BOOLEAN,
     is_blocked BOOLEAN,
     upi_id VARCHAR(255),
-    payment_qr_url VARCHAR(255)
+    payment_qr_url VARCHAR(255),
+    society_id BIGINT,
+    FOREIGN KEY (society_id) REFERENCES societies(id)
 );
 
 -- Create products table

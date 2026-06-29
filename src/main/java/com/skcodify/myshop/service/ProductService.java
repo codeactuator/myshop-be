@@ -28,9 +28,16 @@ public class ProductService {
         this.productMapper = productMapper;
     }
 
-    public List<ProductDto> findProducts(String status, Long userId) {
+    public List<ProductDto> findProducts(String status, Long userId, Long societyId) {
         List<Product> products;
-        if (userId != null) {
+        if (societyId != null) {
+            if (status != null && !status.isEmpty()) {
+                products = productRepository.findByStatusAndSocietyId(status, societyId);
+            } else {
+                products = productRepository.findBySocietyId(societyId);
+            }
+        }
+        else if (userId != null) {
             products = productRepository.findByUserId(userId);
         } else if (status != null && !status.isEmpty()) {
             products = productRepository.findByStatus(status);

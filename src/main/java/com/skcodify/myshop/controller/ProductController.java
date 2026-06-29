@@ -1,37 +1,34 @@
 package com.skcodify.myshop.controller;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
+import com.skcodify.myshop.domain.User;
+import com.skcodify.myshop.dto.ProductDto;
+import com.skcodify.myshop.repository.UserRepository;
+import com.skcodify.myshop.service.CloudStorageService;
+import com.skcodify.myshop.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.skcodify.myshop.dto.ProductDto;
-import com.skcodify.myshop.service.CloudStorageService;
-import com.skcodify.myshop.service.ProductService;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/products")
-// @CrossOrigin(origins = "*") // CORS is configured globally in WebConfig.java
 public class ProductController {
 
     private final ProductService productService;
     private final CloudStorageService cloudStorageService;
+    private final UserRepository userRepository;
 
-    public ProductController(ProductService productService, CloudStorageService cloudStorageService) {
+    public ProductController(ProductService productService, CloudStorageService cloudStorageService, UserRepository userRepository) {
         this.productService = productService;
         this.cloudStorageService = cloudStorageService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -51,8 +48,20 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<List<ProductDto>> getProducts(@RequestParam(required = false) String status,
-                                                       @RequestParam(required = false) Long userId) {
-        return ResponseEntity.ok(productService.findProducts(status, userId));
+                                                       @RequestParam(required = false) Long userId,
+                                                       Principal principal) {
+        Long societyId = null;
+        if (principal != null) {
+            String username = principal.getName();
+            Optional<User> userOpt = userRepository.findByEmail(username);
+            if (userOpt.isEmpty()) {
+                userOpt = userRepository.findByPhone(username);
+            }
+            if (userOpt.isPresent() && userOpt.get().getSociety() != null) {
+                societyId = userOpt.get().getSociety().getId();
+            }
+        }
+        return ResponseEntity.ok(productService.findProducts(status, userId, societyId));
     }
 
     @GetMapping("/{id}")
