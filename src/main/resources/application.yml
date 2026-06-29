@@ -33,7 +33,7 @@ spring:
       #   web-admin-password: password
   # JPA/Hibernate configuration
   jpa:
-    open-in-view: false
+    open-in-view: true
     hibernate:
       # Let Hibernate automatically update the schema based on entities.
       ddl-auto: update

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = "*") // Allow all origins for development
+// CORS is configured globally in WebConfig.java
 public class SocietyController {
 
     private final SocietyService societyService;
