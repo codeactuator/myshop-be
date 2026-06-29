@@ -53,6 +53,32 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- PostgreSQL Driver -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Google Cloud SQL Postgres Socket Factory -->
+        <dependency>
+            <groupId>com.google.cloud.sql</groupId>
+            <artifactId>postgres-socket-factory</artifactId>
+            <version>1.18.0</version>
+        </dependency>
+
+        <!-- Redis (Memorystore) Support -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <!-- WebSockets for real-time chat/updates -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
         <!-- ++ Add these dependencies for Caching with Caffeine ++ -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -79,6 +105,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>app</finalName>
     </build>
 
 </project>

@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:postgresql:///${myshopdb:myshopdb}?socketFactory=com.google.cloud.sql.postgres.SocketFactory&cloudSqlInstance=${CLOUD_SQL_CONNECTION_NAME:myshop-be:asia-south1:myshopdb}&enableIamAuth=true&sslmode=disable
+    username: ${DB_USER:postgres}
+    password: ""
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  cache:
+    type: redis
+    cache-names:
+      - products
+      - shopFronts
+      - reviews
+    redis:
+      time-to-live: 10m

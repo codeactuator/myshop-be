@@ -33,6 +33,7 @@ spring:
       #   web-admin-password: password
   # JPA/Hibernate configuration
   jpa:
+    open-in-view: false
     hibernate:
       # Let Hibernate automatically update the schema based on entities.
       ddl-auto: update
@@ -61,7 +62,7 @@ logging:
     root: INFO
     org.springframework.web: DEBUG
     org.springframework.security: DEBUG
-    org.hibernate: DEBUG
+    org.hibernate: INFO
 
 # Swagger/OpenAPI configuration
 springdoc:
