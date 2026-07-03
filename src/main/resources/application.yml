@@ -43,6 +43,11 @@ spring:
       hibernate:
         # Format the logged SQL to be more readable
         format_sql: true
+  mvc:
+    contentnegotiation:
+      favor-parameter: false
+      media-types:
+        json: application/json
   jackson:
     mapper:
       accept-case-insensitive-enums: true

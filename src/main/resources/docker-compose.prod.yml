@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  my-shop-backend:
+    build:
+      context: ./my-shop-be # Assuming your backend project is in my-shop-be directory
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      # Activate the 'prod' Spring profile to use application-prod.yml
+      - SPRING_PROFILES_ACTIVE=prod
+
+      # --- GCP Cloud SQL Configuration ---
+      # Replace with your actual Cloud SQL connection name (e.g., project-id:region:instance-name)
+      - CLOUD_SQL_CONNECTION_NAME=myshop-be:asia-south1:myshopdb
+      # Replace with your actual database user for Cloud SQL (e.g., 'postgres' or a specific IAM user)
+      - DB_USER=postgres
+      # If you are using IAM authentication as configured in application-prod.yml,
+      # the password field is typically left empty as the socket factory handles authentication.
+      # If you are NOT using IAM authentication, you would need to uncomment and set the password:
+      # - SPRING_DATASOURCE_PASSWORD=your_gcp_database_password
+
+      # Optional: Consider setting ddl-auto to 'validate' or 'none' for production
+      # - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
+
+      # --- Redis Configuration (if applicable for prod) ---
+      # If you have a Redis instance for production, configure its host and port here.
+      # - REDIS_HOST=your_prod_redis_host
+      # - REDIS_PORT=your_prod_redis_port
