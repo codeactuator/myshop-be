@@ -19,15 +19,3 @@ spring:
   jackson:
     mapper:
       accept-case-insensitive-enums: true
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-  cache:
-    type: redis
-    cache-names:
-      - products
-      - shopFronts
-      - reviews
-    redis:
-      time-to-live: 10m

@@ -23,8 +23,3 @@ services:
 
       # Optional: Consider setting ddl-auto to 'validate' or 'none' for production
       # - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
-
-      # --- Redis Configuration (if applicable for prod) ---
-      # If you have a Redis instance for production, configure its host and port here.
-      # - REDIS_HOST=your_prod_redis_host
-      # - REDIS_PORT=your_prod_redis_port

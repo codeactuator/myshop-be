@@ -3,6 +3,7 @@ package com.skcodify.myshop.dto;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Data Transfer Object for representing a Product in API responses.
@@ -19,6 +20,7 @@ public class ProductDto {
     private String status;
     private ZonedDateTime postedDate;
     private Integer stock;
+    private Set<SocietyDto> serviceSocieties;
 
     // Getters and Setters
 
@@ -100,5 +102,13 @@ public class ProductDto {
 
     public void setStock(Integer stock) {
         this.stock = stock;
+    }
+
+    public Set<SocietyDto> getServiceSocieties() {
+        return serviceSocieties;
+    }
+
+    public void setServiceSocieties(Set<SocietyDto> serviceSocieties) {
+        this.serviceSocieties = serviceSocieties;
     }
 }

@@ -1,18 +1,22 @@
 package com.skcodify.myshop.domain;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Table;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 /**
  * Represents a user in the system.
@@ -76,9 +80,13 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private ShopFront shopFront;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "society_id")
-    private Society society;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_societies",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "society_id")
+    )
+    private Set<Society> serviceSocieties = new HashSet<>();
 
     // Constructors
 
@@ -170,11 +178,11 @@ public class User {
         this.shopFront = shopFront;
     }
 
-    public Society getSociety() {
-        return society;
+    public Set<Society> getServiceSocieties() {
+        return serviceSocieties;
     }
 
-    public void setSociety(Society society) {
-        this.society = society;
+    public void setServiceSocieties(Set<Society> serviceSocieties) {
+        this.serviceSocieties = serviceSocieties;
     }
 }

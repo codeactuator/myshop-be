@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS reports;
 DROP TABLE IF EXISTS shop_fronts;
 DROP TABLE IF EXISTS delivery_partners;
 DROP TABLE IF EXISTS delivery_vehicles;
+DROP TABLE IF EXISTS user_societies;
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS societies;
@@ -33,9 +34,16 @@ CREATE TABLE users (
     is_verified BOOLEAN,
     is_blocked BOOLEAN,
     upi_id VARCHAR(255),
-    payment_qr_url VARCHAR(255),
-    society_id BIGINT,
-    FOREIGN KEY (society_id) REFERENCES societies(id)
+    payment_qr_url VARCHAR(255)
+);
+
+-- Create user_societies join table for Many-to-Many relationship
+CREATE TABLE user_societies (
+    user_id BIGINT NOT NULL,
+    society_id BIGINT NOT NULL,
+    PRIMARY KEY (user_id, society_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (society_id) REFERENCES societies(id) ON DELETE CASCADE
 );
 
 -- Create products table

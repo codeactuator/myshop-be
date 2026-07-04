@@ -67,8 +67,11 @@ public class ProductController {
             if (userOpt.isEmpty()) {
                 userOpt = userRepository.findByPhone(username);
             }
-            if (userOpt.isPresent() && userOpt.get().getSociety() != null) {
-                societyId = userOpt.get().getSociety().getId();
+            if (userOpt.isPresent() && userOpt.get().getServiceSocieties() != null) {
+                societyId = userOpt.get().getServiceSocieties().stream()
+                        .map(com.skcodify.myshop.domain.Society::getId)
+                        .findFirst()
+                        .orElse(null);
             }
         }
         return ResponseEntity.ok(productService.findProducts(status, userId, societyId));

@@ -1,8 +1,11 @@
 package com.skcodify.myshop.mapper;
 
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
+import com.skcodify.myshop.domain.Society;
 import com.skcodify.myshop.domain.User;
+import com.skcodify.myshop.dto.SocietyDto;
 import com.skcodify.myshop.dto.UserDto;
 
 @Component
@@ -24,6 +27,19 @@ public class UserMapper {
         dto.setVerified(user.isVerified());
         dto.setBlocked(user.isBlocked());
 
+        if (user.getServiceSocieties() != null) {
+            dto.setServiceSocieties(user.getServiceSocieties().stream()
+                .map(society -> {
+                    SocietyDto sDto = new SocietyDto();
+                    sDto.setId(society.getId());
+                    sDto.setName(society.getName());
+                    sDto.setArea(society.getArea());
+                    return sDto;
+                })
+                .collect(Collectors.toSet())
+            );
+        }
+
         return dto;
     }
 
@@ -43,6 +59,19 @@ public class UserMapper {
         user.setShopName(dto.getShopName());
         user.setVerified(dto.isVerified());
         user.setBlocked(dto.isBlocked());
+
+        if (dto.getServiceSocieties() != null) {
+            user.setServiceSocieties(dto.getServiceSocieties().stream()
+                .map(sDto -> {
+                    Society society = new Society();
+                    society.setId(sDto.getId());
+                    society.setName(sDto.getName());
+                    society.setArea(sDto.getArea());
+                    return society;
+                })
+                .collect(Collectors.toSet())
+            );
+        }
         return user;
     }
 }

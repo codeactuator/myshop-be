@@ -1,5 +1,7 @@
 package com.skcodify.myshop.dto;
 
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.skcodify.myshop.domain.UserType;
 
@@ -23,6 +25,7 @@ public class UserDto {
     private String upiId;
     private String shopTagline;
     private String bannerImageUrl;
+    private Set<SocietyDto> serviceSocieties;
 
     // Getters and Setters
 
@@ -146,5 +149,13 @@ public class UserDto {
 
     public void setBannerImageUrl(String bannerImageUrl) {
         this.bannerImageUrl = bannerImageUrl;
+    }
+
+    public Set<SocietyDto> getServiceSocieties() {
+        return serviceSocieties;
+    }
+
+    public void setServiceSocieties(Set<SocietyDto> serviceSocieties) {
+        this.serviceSocieties = serviceSocieties;
     }
 }

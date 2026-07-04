@@ -1,11 +1,27 @@
 package com.skcodify.myshop.mapper;
 
-import com.skcodify.myshop.domain.Product;
-import com.skcodify.myshop.dto.ProductDto;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.skcodify.myshop.domain.Product;
+import com.skcodify.myshop.domain.User;
+import com.skcodify.myshop.dto.SocietyDto;
+import com.skcodify.myshop.dto.ProductDto;
+import com.skcodify.myshop.repository.UserRepository;
+
 
 @Component
 public class ProductMapper {
+
+    private final UserRepository userRepository;
+
+    @Autowired
+    public ProductMapper(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
 
     public ProductDto toDto(Product product) {
         if (product == null) {
@@ -22,6 +38,22 @@ public class ProductMapper {
         dto.setStatus(product.getStatus());
         dto.setPostedDate(product.getPostedDate());
         dto.setStock(product.getStock());
+
+        if (product.getUserId() != null) {
+            Optional<User> sellerOpt = userRepository.findById(product.getUserId());
+            if (sellerOpt.isPresent() && sellerOpt.get().getServiceSocieties() != null) {
+                dto.setServiceSocieties(sellerOpt.get().getServiceSocieties().stream()
+                    .map(society -> {
+                        SocietyDto sDto = new SocietyDto();
+                        sDto.setId(society.getId());
+                        sDto.setName(society.getName());
+                        sDto.setArea(society.getArea());
+                        return sDto;
+                    })
+                    .collect(Collectors.toSet())
+                );
+            }
+        }
 
         if (product.getUserId() != null) {
             dto.setUserId(String.valueOf(product.getUserId()));
