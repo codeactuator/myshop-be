@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.skcodify.myshop.domain.Product;
+import com.skcodify.myshop.domain.User;
 import com.skcodify.myshop.dto.ProductDto;
 import com.skcodify.myshop.mapper.ProductMapper;
 import com.skcodify.myshop.repository.ProductRepository;
+import com.skcodify.myshop.repository.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -21,10 +23,12 @@ import jakarta.persistence.EntityNotFoundException;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
     private final ProductMapper productMapper;
 
-    public ProductService(ProductRepository productRepository, ProductMapper productMapper) {
+    public ProductService(ProductRepository productRepository, UserRepository userRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
+        this.userRepository = userRepository;
         this.productMapper = productMapper;
     }
 
@@ -38,7 +42,7 @@ public class ProductService {
             }
         }
         else if (userId != null) {
-            products = productRepository.findByUserId(userId);
+            products = productRepository.findBySellerId(userId);
         } else if (status != null && !status.isEmpty()) {
             products = productRepository.findByStatus(status);
         } else {
@@ -81,7 +85,9 @@ public class ProductService {
             product.setStatus(updates.getStatus());
         }
         if (updates.getUserId() != null && !updates.getUserId().isEmpty()) {
-            product.setUserId(Long.valueOf(updates.getUserId()));
+            User seller = userRepository.findById(Long.valueOf(updates.getUserId()))
+                    .orElseThrow(() -> new EntityNotFoundException("Seller not found with id: " + updates.getUserId()));
+            product.setSeller(seller);
         }
         if (updates.getImageUrls() != null) {
             // Clear existing images and add new ones to ensure Hibernate detects collection changes
@@ -119,7 +125,9 @@ public class ProductService {
         product.setStatus(productDto.getStatus() != null ? productDto.getStatus() : "available");
         
         if (productDto.getUserId() != null && !productDto.getUserId().isEmpty()) {
-            product.setUserId(Long.valueOf(productDto.getUserId()));
+            User seller = userRepository.findById(Long.valueOf(productDto.getUserId()))
+                    .orElseThrow(() -> new EntityNotFoundException("Seller not found with id: " + productDto.getUserId()));
+            product.setSeller(seller);
         }
 
         product.setStock(productDto.getStock());

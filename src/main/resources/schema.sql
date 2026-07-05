@@ -34,7 +34,9 @@ CREATE TABLE users (
     is_verified BOOLEAN,
     is_blocked BOOLEAN,
     upi_id VARCHAR(255),
-    payment_qr_url VARCHAR(255)
+    payment_qr_url VARCHAR(255),
+    society_id BIGINT,
+    FOREIGN KEY (society_id) REFERENCES societies(id) ON DELETE SET NULL
 );
 
 -- Create user_societies join table for Many-to-Many relationship

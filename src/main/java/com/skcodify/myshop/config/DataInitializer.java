@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -30,7 +31,7 @@ public class DataInitializer implements CommandLineRunner {
     private final CartRepository cartRepository;
     private final ReviewRepository reviewRepository;
     private final ShopFrontRepository shopFrontRepository;
-
+    private final SocietyRepository societyRepository;
 
     public DataInitializer(UserRepository userRepository, 
             ProductRepository productRepository, 
@@ -38,7 +39,8 @@ public class DataInitializer implements CommandLineRunner {
             DeliveryVehicleRepository deliveryVehicleRepository, 
             CartRepository cartRepository,
             ReviewRepository reviewRepository,
-            ShopFrontRepository shopFrontRepository) {
+            ShopFrontRepository shopFrontRepository,
+            SocietyRepository societyRepository) {
                 
         this.userRepository = userRepository;
         this.productRepository = productRepository;
@@ -47,7 +49,9 @@ public class DataInitializer implements CommandLineRunner {
         this.cartRepository = cartRepository;
         this.reviewRepository = reviewRepository;
         this.shopFrontRepository = shopFrontRepository;
+        this.societyRepository = societyRepository;
     }
+
 
     @Override
     public void run(String... args) {
@@ -70,6 +74,17 @@ public class DataInitializer implements CommandLineRunner {
 
     @Transactional
     private void seedData() {
+        // --- Create Societies ---
+        Society jmFlorence = new Society();
+        jmFlorence.setName("JM Florence");
+        jmFlorence.setArea("Sector 16C, Greater Noida West");
+
+        Society samriddhiGrand = new Society();
+        samriddhiGrand.setName("Samriddhi Grand Avenue");
+        samriddhiGrand.setArea("Sector 16C, Greater Noida West");
+
+        societyRepository.saveAll(List.of(jmFlorence, samriddhiGrand));
+
         // Create an Admin
         User admin = new User();
         admin.setName("Admin User");
@@ -86,6 +101,8 @@ public class DataInitializer implements CommandLineRunner {
         seller1.setUserType(UserType.SELLER);
         seller1.setShopName("Alice's Art & Craft");
         seller1.setVerified(true);
+        seller1.setBuyerSociety(jmFlorence);
+        seller1.setServiceSocieties(new HashSet<>(List.of(jmFlorence)));
 
         User seller2 = new User();
         seller2.setName("Green Grocers");
@@ -94,6 +111,8 @@ public class DataInitializer implements CommandLineRunner {
         seller2.setUserType(UserType.SELLER);
         seller2.setShopName("Green Valley Grocers");
         seller2.setVerified(true);
+        seller2.setBuyerSociety(samriddhiGrand);
+        seller2.setServiceSocieties(new HashSet<>(List.of(samriddhiGrand)));
 
         User seller3 = new User();
         seller3.setName("Pantry Provisions");
@@ -102,6 +121,8 @@ public class DataInitializer implements CommandLineRunner {
         seller3.setUserType(UserType.SELLER);
         seller3.setShopName("The Modern Pantry");
         seller3.setVerified(false);
+        seller3.setBuyerSociety(samriddhiGrand);
+        seller3.setServiceSocieties(new HashSet<>(List.of(samriddhiGrand)));
 
         // --- Create Buyers ---
         User buyer1 = new User();
@@ -110,6 +131,7 @@ public class DataInitializer implements CommandLineRunner {
         buyer1.setPhone("0987654321");
         buyer1.setUserType(UserType.BUYER);
         buyer1.setApartmentNumber("A-101");
+        buyer1.setBuyerSociety(jmFlorence);
 
         User buyer2 = new User();
         buyer2.setName("Diana Prince");
@@ -117,6 +139,7 @@ public class DataInitializer implements CommandLineRunner {
         buyer2.setPhone("1122334455");
         buyer2.setUserType(UserType.BUYER);
         buyer2.setApartmentNumber("B-202");
+        buyer2.setBuyerSociety(samriddhiGrand);
 
         // Create a Delivery Partner User
         User deliveryPartnerUser = new User();
@@ -162,7 +185,7 @@ public class DataInitializer implements CommandLineRunner {
         product1.setStatus("available");
         product1.setImageUrls(new ArrayList<>(List.of("https://images.unsplash.com/photo-1571771894824-269f85b51a89?q=80&w=2080")));
         User randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product1.setUserId(randomSeller.getId());
+        product1.setSeller(randomSeller);
         product1.setPostedDate(ZonedDateTime.now().minusDays(2));
 
         Product product2 = new Product();
@@ -175,7 +198,7 @@ public class DataInitializer implements CommandLineRunner {
         product2.setStatus("available");
         product2.setImageUrls(new ArrayList<>(List.of("https://images.unsplash.com/photo-1598373182133-52452f741e1d?q=80&w=2070")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product2.setUserId(randomSeller.getId());
+        product2.setSeller(randomSeller);
         product2.setPostedDate(ZonedDateTime.now().minusDays(1));
 
         // --- More Food Products ---
@@ -190,7 +213,7 @@ public class DataInitializer implements CommandLineRunner {
         product3.setStatus("available");
         product3.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1597498178148-94e034b933e2?q=80&w=2070", "https://images.unsplash.com/photo-1615485925575-b0354a433921?q=80&w=1974")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product3.setUserId(randomSeller.getId());
+        product3.setSeller(randomSeller);
         product3.setPostedDate(ZonedDateTime.now().minusDays(3));
 
         Product product4 = new Product();
@@ -203,7 +226,7 @@ public class DataInitializer implements CommandLineRunner {
         product4.setStatus("available");
         product4.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1598170845058-32fe411e85bb?q=80&w=1974", "https://images.unsplash.com/photo-1589923188900-85dae523342d?q=80&w=2070")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product4.setUserId(randomSeller.getId());
+        product4.setSeller(randomSeller);
         product4.setPostedDate(ZonedDateTime.now().minusDays(3));
 
         Product product5 = new Product();
@@ -216,7 +239,7 @@ public class DataInitializer implements CommandLineRunner {
         product5.setStatus("available");
         product5.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1540914124281-3425879413d5?q=80&w=2070", "https://images.unsplash.com/photo-1628779238953-a057a08b5318?q=80&w=2070")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product5.setUserId(randomSeller.getId());
+        product5.setSeller(randomSeller);
         product5.setPostedDate(ZonedDateTime.now().minusDays(2));
 
         Product product6 = new Product();
@@ -229,7 +252,7 @@ public class DataInitializer implements CommandLineRunner {
         product6.setStatus("available");
         product6.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1550583724-b2692b2ae38c?q=80&w=1964", "https://images.unsplash.com/photo-1634232777388-a2b3e3da784d?q=80&w=1974")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product6.setUserId(randomSeller.getId());
+        product6.setSeller(randomSeller);
         product6.setPostedDate(ZonedDateTime.now().minusDays(1));
 
         Product product7 = new Product();
@@ -242,7 +265,7 @@ public class DataInitializer implements CommandLineRunner {
         product7.setStatus("available");
         product7.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1632432499343-347a58323319?q=80&w=1974", "https://images.unsplash.com/photo-1559948274-53f875b41935?q=80&w=2070")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product7.setUserId(randomSeller.getId());
+        product7.setSeller(randomSeller);
         product7.setPostedDate(ZonedDateTime.now().minusDays(4));
 
         Product product8 = new Product();
@@ -255,7 +278,7 @@ public class DataInitializer implements CommandLineRunner {
         product8.setStatus("available");
         product8.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1619860861573-a33d6b6c1643?q=80&w=1964", "https://images.unsplash.com/photo-1589881133825-bbb3b9471b6c?q=80&w=2070")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product8.setUserId(randomSeller.getId());
+        product8.setSeller(randomSeller);
         product8.setPostedDate(ZonedDateTime.now().minusDays(5));
 
         Product product9 = new Product();
@@ -268,7 +291,7 @@ public class DataInitializer implements CommandLineRunner {
         product9.setStatus("available");
         product9.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1604503468825-a2744650151c?q=80&w=1974", "https://images.unsplash.com/photo-1587593810167-a84920ea0781?q=80&w=2070")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product9.setUserId(randomSeller.getId());
+        product9.setSeller(randomSeller);
         product9.setPostedDate(ZonedDateTime.now().minusDays(1));
 
         Product product10 = new Product();
@@ -281,7 +304,7 @@ public class DataInitializer implements CommandLineRunner {
         product10.setStatus("available");
         product10.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1599043513900-ed6fe01d3833?q=80&w=2070", "https://images.unsplash.com/photo-1615141982483-18ce1a3579d4?q=80&w=1970")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product10.setUserId(randomSeller.getId());
+        product10.setSeller(randomSeller);
         product10.setPostedDate(ZonedDateTime.now().minusDays(2));
 
         Product product11 = new Product();
@@ -294,7 +317,7 @@ public class DataInitializer implements CommandLineRunner {
         product11.setStatus("available");
         product11.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1516684732162-798a0062be99?q=80&w=2070", "https://images.unsplash.com/photo-1603631240313-aa345348b57c?q=80&w=1964")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product11.setUserId(randomSeller.getId());
+        product11.setSeller(randomSeller);
         product11.setPostedDate(ZonedDateTime.now().minusDays(10));
 
         Product product12 = new Product();
@@ -307,7 +330,7 @@ public class DataInitializer implements CommandLineRunner {
         product12.setStatus("available");
         product12.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1587874522923-853b01c3d377?q=80&w=1974", "https://images.unsplash.com/photo-1621996346565-e326e2021e3a?q=80&w=2070")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product12.setUserId(randomSeller.getId());
+        product12.setSeller(randomSeller);
         product12.setPostedDate(ZonedDateTime.now().minusDays(15));
 
         Product product13 = new Product();
@@ -320,7 +343,7 @@ public class DataInitializer implements CommandLineRunner {
         product13.setStatus("available");
         product13.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?q=80&w=1974", "https://images.unsplash.com/photo-1613919113643-2515a2b397a3?q=80&w=1974")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product13.setUserId(randomSeller.getId());
+        product13.setSeller(randomSeller);
         product13.setPostedDate(ZonedDateTime.now().minusDays(5));
 
         Product product14 = new Product();
@@ -333,7 +356,7 @@ public class DataInitializer implements CommandLineRunner {
         product14.setStatus("available");
         product14.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1603203093831-d43431479159?q=80&w=2070", "https://images.unsplash.com/photo-1511381939415-e340a6479939?q=80&w=1974")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product14.setUserId(randomSeller.getId());
+        product14.setSeller(randomSeller);
         product14.setPostedDate(ZonedDateTime.now().minusDays(8));
 
         Product product15 = new Product();
@@ -346,7 +369,7 @@ public class DataInitializer implements CommandLineRunner {
         product15.setStatus("available");
         product15.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1600271886742-f049cd451bba?q=80&w=1974", "https://images.unsplash.com/photo-1577685948902-a3d7d8e53b23?q=80&w=1974")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product15.setUserId(randomSeller.getId());
+        product15.setSeller(randomSeller);
         product15.setPostedDate(ZonedDateTime.now().minusDays(1));
 
         Product product16 = new Product();
@@ -359,7 +382,7 @@ public class DataInitializer implements CommandLineRunner {
         product16.setStatus("available");
         product16.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1511920183353-3c7c9c5285d8?q=80&w=1974", "https://images.unsplash.com/photo-1599160219458-9f1529eb64a7?q=80&w=2070")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product16.setUserId(randomSeller.getId());
+        product16.setSeller(randomSeller);
         product16.setPostedDate(ZonedDateTime.now().minusDays(20));
 
         Product product17 = new Product();
@@ -372,7 +395,7 @@ public class DataInitializer implements CommandLineRunner {
         product17.setStatus("available");
         product17.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1580992847833-a39c4a751252?q=80&w=2070", "https://images.unsplash.com/photo-1576045057995-568f588f82fb?q=80&w=1974")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product17.setUserId(randomSeller.getId());
+        product17.setSeller(randomSeller);
         product17.setPostedDate(ZonedDateTime.now().minusDays(30));
 
         Product product18 = new Product();
@@ -385,7 +408,7 @@ public class DataInitializer implements CommandLineRunner {
         product18.setStatus("available");
         product18.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1503524279369-97d2f82d4689?q=80&w=1974", "https://images.unsplash.com/photo-1558393393-99c961a35979?q=80&w=1974")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product18.setUserId(randomSeller.getId());
+        product18.setSeller(randomSeller);
         product18.setPostedDate(ZonedDateTime.now().minusDays(30));
 
         Product product19 = new Product();
@@ -398,7 +421,7 @@ public class DataInitializer implements CommandLineRunner {
         product19.setStatus("available");
         product19.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1598965675045-a5b542544120?q=80&w=2070", "https://images.unsplash.com/photo-1519996529931-28324d5a630e?q=80&w=1974")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product19.setUserId(randomSeller.getId());
+        product19.setSeller(randomSeller);
         product19.setPostedDate(ZonedDateTime.now().minusDays(1));
 
         Product product20 = new Product();
@@ -411,7 +434,7 @@ public class DataInitializer implements CommandLineRunner {
         product20.setStatus("available");
         product20.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1563180226-e09f5b54950a?q=80&w=1974", "https://images.unsplash.com/photo-1619797367841-6a7550875b12?q=80&w=1974")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product20.setUserId(randomSeller.getId());
+        product20.setSeller(randomSeller);
         product20.setPostedDate(ZonedDateTime.now().minusDays(6));
 
         Product product21 = new Product();
@@ -424,7 +447,7 @@ public class DataInitializer implements CommandLineRunner {
         product21.setStatus("available");
         product21.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1607582280932-d89242d86217?q=80&w=1974", "https://images.unsplash.com/photo-1532597411303-5ff131a5dcd3?q=80&w=1974")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product21.setUserId(randomSeller.getId());
+        product21.setSeller(randomSeller);
         product21.setPostedDate(ZonedDateTime.now().minusDays(12));
 
         Product product22 = new Product();
@@ -437,7 +460,7 @@ public class DataInitializer implements CommandLineRunner {
         product22.setStatus("available");
         product22.setImageUrls(new ArrayList<>(Arrays.asList("https://images.unsplash.com/photo-1572481492584-35b7f353c159?q=80&w=1974", "https://images.unsplash.com/photo-1626082626944-805f45317c69?q=80&w=1964")));
         randomSeller = sellers.get(rand.nextInt(sellers.size()));
-        product22.setUserId(randomSeller.getId());
+        product22.setSeller(randomSeller);
         product22.setPostedDate(ZonedDateTime.now().minusDays(25));
 
         productRepository.saveAll(List.of(product1, product2, product3, product4, product5, product6, product7, product8, product9, product10, product11, product12, product13, product14, product15, product16, product17, product18, product19, product20, product21, product22));

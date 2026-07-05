@@ -8,6 +8,8 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
@@ -53,11 +55,11 @@ public class Product {
     private String category;
 
     /**
-     * The ID of the user who is selling this product.
-     * This replaces the direct @ManyToOne relationship.
+     * The user who is selling this product (the seller).
      */
-    @Column(name = "seller_id")
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id")
+    private User seller;
 
     /**
      * The current stock quantity available.
@@ -130,12 +132,12 @@ public class Product {
         this.category = category;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getSeller() {
+        return seller;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setSeller(User seller) {
+        this.seller = seller;
     }
 
     public int getStock() {

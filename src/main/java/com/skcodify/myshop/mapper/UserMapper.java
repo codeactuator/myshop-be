@@ -27,6 +27,14 @@ public class UserMapper {
         dto.setVerified(user.isVerified());
         dto.setBlocked(user.isBlocked());
 
+        if (user.getBuyerSociety() != null) {
+            SocietyDto sDto = new SocietyDto();
+            sDto.setId(user.getBuyerSociety().getId());
+            sDto.setName(user.getBuyerSociety().getName());
+            sDto.setArea(user.getBuyerSociety().getArea());
+            dto.setBuyerSociety(sDto);
+        }
+
         if (user.getServiceSocieties() != null) {
             dto.setServiceSocieties(user.getServiceSocieties().stream()
                 .map(society -> {
@@ -59,6 +67,14 @@ public class UserMapper {
         user.setShopName(dto.getShopName());
         user.setVerified(dto.isVerified());
         user.setBlocked(dto.isBlocked());
+
+        if (dto.getBuyerSociety() != null) {
+            Society society = new Society();
+            society.setId(dto.getBuyerSociety().getId());
+            society.setName(dto.getBuyerSociety().getName());
+            society.setArea(dto.getBuyerSociety().getArea());
+            user.setBuyerSociety(society);
+        }
 
         if (dto.getServiceSocieties() != null) {
             user.setServiceSocieties(dto.getServiceSocieties().stream()

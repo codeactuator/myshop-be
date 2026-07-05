@@ -9,17 +9,13 @@ import com.skcodify.myshop.domain.Product;
 import com.skcodify.myshop.domain.User;
 import com.skcodify.myshop.dto.SocietyDto;
 import com.skcodify.myshop.dto.ProductDto;
-import com.skcodify.myshop.repository.UserRepository;
 
 
 @Component
 public class ProductMapper {
 
-    private final UserRepository userRepository;
-
     @Autowired
-    public ProductMapper(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public ProductMapper() {
     }
 
 
@@ -39,10 +35,10 @@ public class ProductMapper {
         dto.setPostedDate(product.getPostedDate());
         dto.setStock(product.getStock());
 
-        if (product.getUserId() != null) {
-            Optional<User> sellerOpt = userRepository.findById(product.getUserId());
-            if (sellerOpt.isPresent() && sellerOpt.get().getServiceSocieties() != null) {
-                dto.setServiceSocieties(sellerOpt.get().getServiceSocieties().stream()
+        if (product.getSeller() != null) {
+            User seller = product.getSeller();
+            if (seller.getServiceSocieties() != null) {
+                dto.setServiceSocieties(seller.getServiceSocieties().stream()
                     .map(society -> {
                         SocietyDto sDto = new SocietyDto();
                         sDto.setId(society.getId());
@@ -55,8 +51,8 @@ public class ProductMapper {
             }
         }
 
-        if (product.getUserId() != null) {
-            dto.setUserId(String.valueOf(product.getUserId()));
+        if (product.getSeller() != null) {
+            dto.setUserId(String.valueOf(product.getSeller().getId()));
         }
 
         return dto;

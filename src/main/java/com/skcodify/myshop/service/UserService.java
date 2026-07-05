@@ -50,6 +50,7 @@ public class UserService {
     public UserDto findUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        if (user.getBuyerSociety() != null) user.getBuyerSociety().getId(); // Force initialize personal address
         user.getServiceSocieties().size(); // Force initialization of the lazy collection inside transaction
         return userMapper.toDto(user);
     }
@@ -58,6 +59,7 @@ public class UserService {
     public Optional<UserDto> findUserByPhone(String phone) {
         return userRepository.findByPhone(phone)
                 .map(user -> {
+                    if (user.getBuyerSociety() != null) user.getBuyerSociety().getId(); // Force initialize personal address
                     user.getServiceSocieties().size(); // Force initialization of lazy collection
                     return userMapper.toDto(user);
                 });
@@ -84,13 +86,15 @@ public class UserService {
         if (updates.getUserType() != null) user.setUserType(updates.getUserType());
         if (updates.getShopName() != null) user.setShopName(updates.getShopName());
 
-        // Handle unified serviceSocieties mapping with role-based backend validation
-        if (updates.getServiceSocieties() != null) {
-            // Backend Validation: Buyers can belong to at most one society
-            if (user.getUserType() != UserType.SELLER && updates.getServiceSocieties().size() > 1) {
-                throw new IllegalArgumentException("Buyers can select at most one society.");
-            }
+        // 1. Map personal home address (applicable to both buyers and sellers)
+        if (updates.getBuyerSociety() != null && updates.getBuyerSociety().getId() != null) {
+            Society society = societyRepository.findById(updates.getBuyerSociety().getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Society not found with id: " + updates.getBuyerSociety().getId()));
+            user.setBuyerSociety(society);
+        }
 
+        // 2. Map business service areas (sellers only)
+        if (updates.getServiceSocieties() != null) {
             List<Long> targetIds = updates.getServiceSocieties().stream()
                     .map(s -> s.getId())
                     .filter(java.util.Objects::nonNull)
@@ -115,6 +119,7 @@ public class UserService {
     private UserDto saveUser(User user) { 
         User savedUser = userRepository.saveAndFlush(user);
         // Force loading of the collection to ensure it is populated within the transaction
+        if (savedUser.getBuyerSociety() != null) savedUser.getBuyerSociety().getId();
         savedUser.getServiceSocieties().size();
         
         UserDto userDto = userMapper.toDto(savedUser);

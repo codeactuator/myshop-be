@@ -59,22 +59,21 @@ public class ProductController {
     @Transactional(readOnly = true)
     public ResponseEntity<List<ProductDto>> getProducts(@RequestParam(required = false) String status,
                                                        @RequestParam(required = false) Long userId,
+                                                       @RequestParam(required = false) Long societyId,
                                                        Principal principal) {
-        Long societyId = null;
-        if (principal != null) {
+        Long targetSocietyId = societyId;
+        if (targetSocietyId == null && principal != null) {
             String username = principal.getName();
             Optional<User> userOpt = userRepository.findByEmail(username);
             if (userOpt.isEmpty()) {
                 userOpt = userRepository.findByPhone(username);
             }
-            if (userOpt.isPresent() && userOpt.get().getServiceSocieties() != null) {
-                societyId = userOpt.get().getServiceSocieties().stream()
-                        .map(com.skcodify.myshop.domain.Society::getId)
-                        .findFirst()
-                        .orElse(null);
+            if (userOpt.isPresent() && userOpt.get().getBuyerSociety() != null) {
+                // Read the buyer's personal residential society ID
+                targetSocietyId = userOpt.get().getBuyerSociety().getId();
             }
         }
-        return ResponseEntity.ok(productService.findProducts(status, userId, societyId));
+        return ResponseEntity.ok(productService.findProducts(status, userId, targetSocietyId));
     }
 
     @GetMapping("/{id}")

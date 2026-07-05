@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -79,6 +80,10 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private ShopFront shopFront;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "society_id")
+    private Society buyerSociety;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -176,6 +181,14 @@ public class User {
 
     public void setShopFront(ShopFront shopFront) {
         this.shopFront = shopFront;
+    }
+
+    public Society getBuyerSociety() {
+        return buyerSociety;
+    }
+
+    public void setBuyerSociety(Society buyerSociety) {
+        this.buyerSociety = buyerSociety;
     }
 
     public Set<Society> getServiceSocieties() {

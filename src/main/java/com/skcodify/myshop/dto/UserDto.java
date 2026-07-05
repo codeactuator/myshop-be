@@ -25,6 +25,7 @@ public class UserDto {
     private String upiId;
     private String shopTagline;
     private String bannerImageUrl;
+    private SocietyDto buyerSociety;
     private Set<SocietyDto> serviceSocieties;
 
     // Getters and Setters
@@ -149,6 +150,14 @@ public class UserDto {
 
     public void setBannerImageUrl(String bannerImageUrl) {
         this.bannerImageUrl = bannerImageUrl;
+    }
+
+    public SocietyDto getBuyerSociety() {
+        return buyerSociety;
+    }
+
+    public void setBuyerSociety(SocietyDto buyerSociety) {
+        this.buyerSociety = buyerSociety;
     }
 
     public Set<SocietyDto> getServiceSocieties() {

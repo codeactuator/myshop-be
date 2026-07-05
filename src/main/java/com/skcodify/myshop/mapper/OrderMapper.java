@@ -69,8 +69,8 @@ public class OrderMapper {
         dto.setPostedDate(product.getPostedDate());
         dto.setQuantity(orderItem.getQuantity());
 
-        if (product.getUserId() != null) {
-            dto.setUserId(String.valueOf(product.getUserId()));
+        if (product.getSeller() != null) {
+            dto.setUserId(String.valueOf(product.getSeller().getId()));
         }
 
         return dto;

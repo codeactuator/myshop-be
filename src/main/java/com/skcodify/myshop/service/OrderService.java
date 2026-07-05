@@ -111,8 +111,9 @@ public class OrderService {
 
         // Resolve all IDs within the active transaction to avoid LazyInitializationException after commit
         final List<Long> sellerIds = savedOrder.getItems() != null ? savedOrder.getItems().stream()
-                .map(item -> item.getProduct().getUserId())
+                .map(item -> item.getProduct().getSeller())
                 .filter(java.util.Objects::nonNull)
+                .map(User::getId)
                 .distinct()
                 .collect(Collectors.toList()) : List.of();
         final String orderIdStr = savedOrder.getId();
@@ -155,8 +156,9 @@ public class OrderService {
                 ? updatedOrder.getDeliveryPartner().getUser().getId()
                 : null;
         final List<Long> sellerIds = updatedOrder.getItems() != null ? updatedOrder.getItems().stream()
-                .map(item -> item.getProduct().getUserId())
+                .map(item -> item.getProduct().getSeller())
                 .filter(java.util.Objects::nonNull)
+                .map(User::getId)
                 .distinct()
                 .collect(Collectors.toList()) : List.of();
         final OrderStatus orderStatus = updatedOrder.getStatus();
