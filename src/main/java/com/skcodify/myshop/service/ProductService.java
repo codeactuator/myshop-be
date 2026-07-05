@@ -7,6 +7,10 @@ import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,11 +36,14 @@ public class ProductService {
         this.productMapper = productMapper;
     }
 
-    public List<ProductDto> findProducts(String status, Long userId, Long societyId) {
+    public List<ProductDto> findProducts(String status, Long userId, Long societyId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("postedDate").descending());
         List<Product> products;
-        if (societyId != null) {
+        
+        if (societyId != null && societyId != 0) {
             if (status != null && !status.isEmpty()) {
-                products = productRepository.findByStatusAndSocietyId(status, societyId);
+                Page<Product> productPage = productRepository.findByStatusAndSocietyId(status, societyId, pageable);
+                products = productPage.getContent();
             } else {
                 products = productRepository.findBySocietyId(societyId);
             }
@@ -44,7 +51,8 @@ public class ProductService {
         else if (userId != null) {
             products = productRepository.findBySellerId(userId);
         } else if (status != null && !status.isEmpty()) {
-            products = productRepository.findByStatus(status);
+            Page<Product> productPage = productRepository.findByStatus(status, pageable);
+            products = productPage.getContent();
         } else {
             products = productRepository.findAll();
         }

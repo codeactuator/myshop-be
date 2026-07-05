@@ -2,6 +2,8 @@ package com.skcodify.myshop.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +12,7 @@ import com.skcodify.myshop.domain.Product;
 
 public interface ProductRepository extends JpaRepository<Product, String> {
 
-    List<Product> findByStatus(String status);
+    Page<Product> findByStatus(String status, Pageable pageable);
 
     List<Product> findBySellerId(Long sellerId);
 
@@ -23,10 +25,9 @@ public interface ProductRepository extends JpaRepository<Product, String> {
            "JOIN p.seller s " +
            "JOIN s.serviceSocieties soc " +
            "WHERE p.status = :status AND soc.id = :societyId")
-    List<Product> findByStatusAndSocietyId(
+    Page<Product> findByStatusAndSocietyId(
         @Param("status") String status, 
-        @Param("societyId") Long societyId
+        @Param("societyId") Long societyId,
+        Pageable pageable
     );
-
-
 }

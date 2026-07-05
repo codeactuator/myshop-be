@@ -60,6 +60,8 @@ public class ProductController {
     public ResponseEntity<List<ProductDto>> getProducts(@RequestParam(required = false) String status,
                                                        @RequestParam(required = false) Long userId,
                                                        @RequestParam(required = false) Long societyId,
+                                                       @RequestParam(defaultValue = "0") int page,
+                                                       @RequestParam(defaultValue = "10") int size,
                                                        Principal principal) {
         Long targetSocietyId = societyId;
         if (targetSocietyId == null && principal != null) {
@@ -73,7 +75,7 @@ public class ProductController {
                 targetSocietyId = userOpt.get().getBuyerSociety().getId();
             }
         }
-        return ResponseEntity.ok(productService.findProducts(status, userId, targetSocietyId));
+        return ResponseEntity.ok(productService.findProducts(status, userId, targetSocietyId, page, size));
     }
 
     @GetMapping("/{id}")
