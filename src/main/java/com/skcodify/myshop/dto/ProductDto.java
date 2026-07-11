@@ -21,6 +21,11 @@ public class ProductDto {
     private ZonedDateTime postedDate;
     private Integer stock;
     private Set<SocietyDto> serviceSocieties;
+    private String sellerName;
+    private String shopName;
+    private String shopTagline;
+    private boolean isVerifiedSeller;
+    private String sellerProfileImageUrl;
 
     // Getters and Setters
 
@@ -110,5 +115,45 @@ public class ProductDto {
 
     public void setServiceSocieties(Set<SocietyDto> serviceSocieties) {
         this.serviceSocieties = serviceSocieties;
+    }
+
+    public String getSellerName() {
+        return sellerName;
+    }
+
+    public void setSellerName(String sellerName) {
+        this.sellerName = sellerName;
+    }
+
+    public String getShopName() {
+        return shopName;
+    }
+
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
+    }
+
+    public String getShopTagline() {
+        return shopTagline;
+    }
+
+    public void setShopTagline(String shopTagline) {
+        this.shopTagline = shopTagline;
+    }
+
+    public boolean isVerifiedSeller() {
+        return isVerifiedSeller;
+    }
+
+    public void setVerifiedSeller(boolean verifiedSeller) {
+        isVerifiedSeller = verifiedSeller;
+    }
+
+    public String getSellerProfileImageUrl() {
+        return sellerProfileImageUrl;
+    }
+
+    public void setSellerProfileImageUrl(String sellerProfileImageUrl) {
+        this.sellerProfileImageUrl = sellerProfileImageUrl;
     }
 }

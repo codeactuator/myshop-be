@@ -51,6 +51,15 @@ public class ShopFrontController {
         return ResponseEntity.ok(shopFrontService.updateShopFront(sellerId, shopFrontDto));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<ShopFrontDto>> searchShopsBySociety(
+            @RequestParam(required = false) Long societyId,
+            @RequestParam(required = false) String query) {
+        // Resolves shop configurations matching the designated delivery boundary directly on the server
+        List<ShopFrontDto> shops = shopFrontService.searchShops(societyId, query);
+        return ResponseEntity.ok(shops);
+    }
+
     @GetMapping("/batch")
     public ResponseEntity<List<ShopFrontDto>> getShopFrontsInBatch(@RequestParam List<Long> sellerIds) {
         return ResponseEntity.ok(shopFrontService.getShopFrontsBySellerIds(sellerIds));

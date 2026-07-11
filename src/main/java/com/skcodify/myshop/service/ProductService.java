@@ -15,10 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.skcodify.myshop.domain.Product;
+import com.skcodify.myshop.domain.ShopFront;
 import com.skcodify.myshop.domain.User;
 import com.skcodify.myshop.dto.ProductDto;
 import com.skcodify.myshop.mapper.ProductMapper;
 import com.skcodify.myshop.repository.ProductRepository;
+import com.skcodify.myshop.repository.ShopFrontRepository;
 import com.skcodify.myshop.repository.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -28,11 +30,13 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final ShopFrontRepository shopFrontRepository;
     private final ProductMapper productMapper;
 
-    public ProductService(ProductRepository productRepository, UserRepository userRepository, ProductMapper productMapper) {
+    public ProductService(ProductRepository productRepository, UserRepository userRepository, ShopFrontRepository shopFrontRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.userRepository = userRepository;
+        this.shopFrontRepository = shopFrontRepository;
         this.productMapper = productMapper;
     }
 
@@ -57,7 +61,25 @@ public class ProductService {
             products = productRepository.findAll();
         }
         return products.stream()
-                .map(productMapper::toDto)
+                .map(product -> {
+                    ProductDto dto = productMapper.toDto(product);
+                    User seller = product.getSeller();
+                    if (seller != null) {
+                        dto.setSellerName(seller.getName());
+                        dto.setVerifiedSeller(seller.isVerified());
+                        
+                        // Resolve ShopFront options server-side
+                        ShopFront sf = seller.getShopFront();
+                        if (sf != null) {
+                            dto.setShopName(sf.getShopName());
+                            dto.setShopTagline(sf.getShopTagline());
+                            dto.setSellerProfileImageUrl(sf.getProfileImageUrl());
+                        } else {
+                            dto.setShopName(seller.getShopName() != null ? seller.getShopName() : seller.getName());
+                        }
+                    }
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 

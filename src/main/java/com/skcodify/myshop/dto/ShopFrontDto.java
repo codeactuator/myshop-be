@@ -1,5 +1,6 @@
 package com.skcodify.myshop.dto;
 
+
 import java.util.List;
 
 public class ShopFrontDto {
@@ -17,6 +18,11 @@ public class ShopFrontDto {
     private String phonepeId;
     private String paymentQrUrl;
     private List<String> socialMediaLinks;
+    private boolean isVerified;
+    private boolean isBlocked;
+    private String phone;
+    private String email;
+    private List<ProductDto> popularProducts;
 
     // Getters and Setters
 
@@ -122,5 +128,45 @@ public class ShopFrontDto {
 
     public void setSocialMediaLinks(List<String> socialMediaLinks) {
         this.socialMediaLinks = socialMediaLinks;
+    }
+
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(boolean verified) {
+        isVerified = verified;
+    }
+
+    public boolean isBlocked() {
+        return isBlocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        isBlocked = blocked;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public List<ProductDto> getPopularProducts() {
+        return popularProducts;
+    }
+
+    public void setPopularProducts(List<ProductDto> popularProducts) {
+        this.popularProducts = popularProducts;
     }
 }
