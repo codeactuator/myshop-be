@@ -19,3 +19,11 @@ spring:
   jackson:
     mapper:
       accept-case-insensitive-enums: true
+
+server:
+  forward-headers-strategy: framework
+
+jwt:
+  # Pulls the secret dynamically from the JWT_SECRET environment variable in production
+  secret: "${JWT_SECRET:9a4f2c8d3e1b7f0a5c8e3d2b1a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a10}"
+  expiration: 864000000 # 10 days in milliseconds

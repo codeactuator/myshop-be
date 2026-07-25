@@ -61,6 +61,8 @@ public class ProductService {
             products = productRepository.findAll();
         }
         return products.stream()
+                .filter(product -> status == null || status.isEmpty() || status.equalsIgnoreCase(product.getStatus()))
+                .filter(product -> product.getSeller() == null || !product.getSeller().isBlocked()) // Filter out products from blocked/disabled sellers
                 .map(product -> {
                     ProductDto dto = productMapper.toDto(product);
                     User seller = product.getSeller();
