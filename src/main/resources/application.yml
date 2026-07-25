@@ -3,6 +3,11 @@ server:
   address: 0.0.0.0
   servlet:
     context-path: /api
+  forward-headers-strategy: framework
+
+jwt:
+  secret: "9a4f2c8d3e1b7f0a5c8e3d2b1a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a10"
+  expiration: 864000000 # 10 days in milliseconds
 
 gcp:
   bucket:

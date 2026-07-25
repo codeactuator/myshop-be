@@ -108,12 +108,11 @@ public class ShopFrontService {
 
         existingShopFronts.addAll(createdShopFronts);
         return existingShopFronts.stream()
+                .filter(sf -> sf.getUser() != null && !sf.getUser().isBlocked()) // Do not list shops that are disabled/blocked by admin
                 .map(sf -> {
                     ShopFrontDto dto = shopFrontMapper.toDto(sf);
-                    if (sf.getUser() != null) {
-                        enrichDtoWithUserMetadata(dto, sf.getUser());
-                        enrichDtoWithPopularProducts(dto, sf.getUser().getId());
-                    }
+                    enrichDtoWithUserMetadata(dto, sf.getUser());
+                    enrichDtoWithPopularProducts(dto, sf.getUser().getId());
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -131,6 +130,7 @@ public class ShopFrontService {
         List<com.skcodify.myshop.domain.Product> products = productRepository.findBySellerId(sellerId);
         List<ProductDto> popular = products.stream()
                 .filter(p -> "available".equalsIgnoreCase(p.getStatus()))
+                .filter(p -> p.getSeller() != null && !p.getSeller().isBlocked()) // Ensure product is not listed if the seller is disabled/blocked by admin
                 .limit(3)
                 .map(productMapper::toDto)
                 .collect(Collectors.toList());
