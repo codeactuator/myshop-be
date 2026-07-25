@@ -16,7 +16,7 @@ public class WebConfig {
                 registry.addMapping("/**")
                         .allowedOriginPatterns(
                                 "https://myshop-ui-483027819584.asia-south1.run.app",
-                                "https://www.hungrynow.in",
+                                "https://hungrynow.in",
                                 "https://myshop-be-483027819584.asia-south1.run.app",
                                 "http://localhost:[*]"
                         )
